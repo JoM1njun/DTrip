@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DTrip</title>
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/tabbar.css">
+    <link rel="stylesheet" href="css/see_all.css">
+    <script type="module" src="js/app.js" defer></script>
+    <script type="module" src="js/components/tabbar.js" defer></script>
+    <script type="module" src="js/database/firebase.js" defer></script>
+</head>
+
+<body>
+    <!-- 헤더/검색 컨테이너 -->
+    <header id="header" class="header">
+        <h1 class="logo">DTrip</h1>
+        <div class="search-box">
+            <input id="searchInput" type="text" placeholder="Search">
+            <span class="search-icon">
+                <img src="assets/icons/search.svg" alt="search" />
+            </span>
+        </div>
+    </header>
+
+    <section id="categoryContainer" class="content-section category-section">
+        <div class="category-item" data-type="food">
+            <img src="assets/category/맛집.svg" />
+            <p>맛집</p>
+        </div>
+        <div class="category-item" data-type="date">
+            <img src="assets/category/데이트.svg" />
+            <p>데이트</p>
+        </div>
+        <div class="category-item" data-type="festival">
+            <img src="assets/category/축제.svg" />
+            <p>축제</p>
+        </div>
+    </section>
+
+    <section id="tagContainer" class="content-section">
+        <div class="tag-filter">
+            <span class="tag">
+                <img src="assets/tag_filter/식당.svg" /> 음식점</span>
+            <span class="tag">
+                <img src="assets/tag_filter/관광.svg" /> 관광</span>
+            <span class="tag">
+                <img src="assets/tag_filter/자연.svg" /> 자연</span>
+            <span class="tag">
+                <img src="assets/tag_filter/카페.svg" /> 카페</span>
+            <span class="tag">
+                <img src="assets/tag_filter/미술관.svg" /> 미술관</span>
+        </div>
+    </section>
+
+    <main id="content"></main>
+
+    <!-- 탭바 -->
+    <nav id="tabbar" class="tabbar">
+        <div class="tab-item" data-page="home">
+            <img src="assets/tabbar/home.svg">
+            <p>Home</p>
+        </div>
+
+        <div class="tab-item" data-page="map">
+            <img src="assets/tabbar/discover.svg">
+            <p>Info</p>
+        </div>
+        <div class="tab-item" data-page="favorite">
+            <img src="assets/tabbar/heart.svg">
+            <p>좋아요</p>
+        </div>
+        <div class="tab-item" data-page="menu">
+            <img src="assets/tabbar/menu.svg">
+            <p>메뉴</p>
+        </div>
+    </nav>
+</body>
+
+</html>

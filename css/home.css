@@ -1,0 +1,195 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f8f8f8;
+  overflow-y: scroll;  
+  scrollbar-width: none;  /* Firefox 스크롤바 숨기기 */
+}
+
+body::-webkit-scrollbar {
+  display: none;          /* Chrome, Safari 스크롤바 숨기기 */
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  height: 100px;
+  z-index: 1000;
+  background: #f8f8f8;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#content {
+  overflow: visible !important;
+  padding-bottom: 80px; /* tab bar 공간 확보 */
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: bold;
+  color: #b299ff;
+  padding: 10px;
+}
+
+.search-box {
+  position: relative;
+  top: 3px;
+  right: 20px;
+  max-width: 200px;
+  align-items: center;
+  /* position: absolute; */
+}
+
+.search-box input {
+  width: 80%;
+  padding: 10px 40px 10px 10px; /* 위, 오른쪽, 아래, 왼쪽 */
+  font-size: 16px;
+  border-radius: 25px;
+  border: 0px solid #ddd;
+  box-shadow: 0 0px 2px rgba(0,0,0,0.3);
+}
+
+.search-icon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  right: 0px;
+  top: 50%;
+  font-size: 20px;
+  transform: translateY(-50%);
+}
+
+.search-icon img {
+  width: 18px;
+  height: 18px;
+}
+
+.category-section {
+  display: flex;
+  gap: 25px;
+  overflow-x: auto;
+  padding: 6px 12px;
+  height: 150px;
+  justify-content: center;
+}
+
+.category-item {
+  width: 100px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.category-item p {
+  margin-top: 0px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.category-item img {
+  width: 100px;
+  height: 100px;
+  border-radius: 20px;
+  background: #eee;
+}
+
+.tag-filter {
+  position: sticky;
+  top: 0;
+  padding: 4px 5px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;  
+  white-space: nowrap;    /* 줄바꿈 방지 */
+  scrollbar-width: none;  /* Firefox 스크롤바 숨기기 */
+}
+
+.tag-filter::-webkit-scrollbar {
+  display: none;          /* Chrome, Safari 스크롤바 숨기기 */
+}
+
+.tag-filter span {
+  display: flex;
+  background: #ffffff;
+  gap: 7px;
+  padding: 6px 12px;
+  text-align: center;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 0px 2px rgba(0,0,0,0.3);
+  white-space: nowrap;
+}
+
+.list-section {
+  padding: 0 12px 20px;
+}
+
+.list-header {
+  height: 30px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.card-container {
+  display: flex;
+  gap: 16px;
+  overflow-x: scroll;
+  padding: 6px 0;
+  scrollbar-width: none;  /* Firefox 스크롤바 숨기기 */
+}
+
+.card {
+  min-width: 160px;
+  max-width: 160px;
+  height: 220px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 0px 2px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+
+.card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+}
+
+.card .info {
+  padding: 0px 5px 10px 5px; /* 위, 아래, 오른쪽, 왼쪽 */
+}
+
+.card .info h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.card .info p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.rating {
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.see-all {
+  font-size: 14px;
+  color: #b299ff;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
