@@ -5,3 +5,5 @@
 5. js/database : DB 연결을 위한 폴더 (건드릴 일 없음)
 6. css : 각 화면과 기능별로 css 나눠놨음
 7. assets : 각 이미지들
+8. gitignore : commit과 push 시키지 않을 파일들 지정
+9. package들 : 내가 사용중인 버전 (Node.js)
