@@ -1,5 +1,6 @@
 import { db } from "../database/firebase.js";  // 네 프로젝트의 Firestore 객체
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+import { showHome } from "../app.js";
 
 
 export function loadSeeAllPage(type) {
@@ -51,8 +52,7 @@ export function loadSeeAllPage(type) {
 
   // 🔙 뒤로가기 버튼 이벤트
   document.getElementById("backBtn").addEventListener("click", () => {
-    document.querySelector("header").style.display = "block";
-
+    showHome();
     import("./home.js").then(module => module.loadHomeScreen());
   });
 
@@ -81,11 +81,14 @@ async function loadCardsFromDB(type) {
         <div class="seeall-card">
           <img src="${data.image_url}" alt="${data.name}">
           <p class="place-name">${data.name}</p>
-          <p class="rating">⭐ ${data.rating}</p>
-          ${data.favorite
-          ? `<p class="favorite">❤️ 즐겨찾기</p>`
-          : `<p class="favorite">♡</p>`
-        }
+          <div class="review_rating">
+            <p class="rating"><img src="assets/icons/star.svg"/> ${data.rating}</p>
+            <p class="review"> (${data.review.toLocaleString()} Reviews) </p>
+          </div> 
+          <div class=favorite>
+          <img src="assets/icons/heart.svg"/>
+            ${data.favorite}명이 좋아함
+          </div>
         </div>
       `;
     });

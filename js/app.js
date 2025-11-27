@@ -4,9 +4,18 @@ import { loadFavoriteScreen } from "./screens/favorite.js";
 import { loadMenuScreen } from "./screens/menu.js";
 
 export function showHome() {
-  document.getElementById("header").classList.remove("hidden");
-  document.getElementById("categoryContainer").classList.remove("hidden");
-  document.getElementById("tagContainer").classList.remove("hidden");
+  const header = document.getElementById("header");
+  const cat = document.getElementById("categoryContainer");
+  const tag = document.getElementById("tagContainer");
+
+  header.classList.remove("hidden");
+  cat.classList.remove("hidden");
+  tag.classList.remove("hidden");
+
+  // 혹시 header가 0높이가 되어있으면 강제로 원복
+  header.style.display = "flex";
+  cat.style.display = "block";
+  tag.style.display = "block";
 }
 
 export function hideHeader() {
