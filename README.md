@@ -7,3 +7,6 @@
 7. assets : 각 이미지들
 8. gitignore : commit과 push 시키지 않을 파일들 지정
 9. package들 : 내가 사용중인 버전 (Node.js)
+
+사용중인 DB
+NoSQL - FireBase
