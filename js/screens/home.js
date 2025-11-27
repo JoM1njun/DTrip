@@ -61,7 +61,7 @@ async function loadPopularPlacesUI() {
       <div class="info">
         <h3>${place.name}</h3>
         <p>${place.address}</p>
-        <div class="rating">⭐ ${place.rating}</div>
+        <div class="rating"><img src="assets/icons/star.svg"/> ${place.rating}</div>
       </div>
     </div>
   `
