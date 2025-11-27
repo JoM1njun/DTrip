@@ -141,7 +141,7 @@
   gap: 5px;
 }
 
-.rating {
+.review_rating .rating {
   margin: 0px 0px 4px 10px;
   color: #000;
   font-size: 14px;

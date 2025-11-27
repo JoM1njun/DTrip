@@ -194,18 +194,21 @@ body::-webkit-scrollbar {
 
 .card .info h3 {
   margin: 0;
-  font-size: 16px;
+  margin: 0px 0px 3px 3px;
+  font-size: 15px;
 }
 
 .card .info p {
-  margin: 4px 0 0;
-  font-size: 14px;
-  color: #666;
+  margin: 0px 0px 3px 3px;
+  font-size: 12px;
+  color: #333;
 }
 
-.rating {
+.card .rating {
+  margin: 0px 0px 3px 3px;
+  color: #000;
   font-size: 14px;
-  margin-top: 4px;
+  font-weight: bold;
 }
 
 .see-all {
@@ -216,4 +219,19 @@ body::-webkit-scrollbar {
   border: none;
   padding: 0;
   cursor: pointer;
+}
+
+.address {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  /* 최대 2줄까지만 표시 */
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  line-height: 1.4;
+  /* 줄 간격 */
+  max-height: calc(1.4em * 2);
+  /* 2줄 높이 */
 }

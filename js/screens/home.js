@@ -65,7 +65,7 @@ async function loadPopularPlacesUI() {
       <img src="${place.image_url}" alt="${place.name}">
       <div class="info">
         <h3>${place.name}</h3>
-        <p>${place.address}</p>
+        <p class=address>${place.address}</p>
         <div class="rating"><img src="assets/icons/star.svg"/> ${place.rating}</div>
       </div>
     </div>
@@ -86,8 +86,8 @@ async function loadRecommendPlacesUI() {
       <img src="${place.image_url}" alt="${place.name}">
       <div class="info">
         <h3>${place.name}</h3>
-        <p>${place.address}</p>
-        <div class="rating">⭐ ${place.rating}</div>
+        <p class=address>${place.address}</p>
+        <div class="rating"><img src="assets/icons/star.svg"/> ${place.rating}</div>
       </div>
     </div>
   `
@@ -107,7 +107,7 @@ async function loadUserRecommendPlacesUI() {
       <img src="${place.image_url}" alt="${place.name}">
       <div class="info">
         <h3>${place.name}</h3>
-        <p>${place.address}</p>
+        <p class=address>${place.address}</p>
         <div class="rating">⭐ ${place.rating}</div>
       </div>
     </div>
