@@ -1,3 +1,7 @@
+import { db } from "../database/firebase.js";  // 네 프로젝트의 Firestore 객체
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+
 export function loadSeeAllPage(type) {
   const content = document.getElementById("content");
 
@@ -40,32 +44,57 @@ export function loadSeeAllPage(type) {
     </section>
 
     <!-- 📦 카드 2열 그리드 -->
-    <section class="seeall-grid">
-      ${createCards()}
+    <section class="seeall-grid" id ="seeAllGrid">
+      <p>로딩 중...</p>
     </section>
   `;
 
   // 🔙 뒤로가기 버튼 이벤트
   document.getElementById("backBtn").addEventListener("click", () => {
-    document.querySelector("header").style.display = "block"; 
+    document.querySelector("header").style.display = "block";
 
     import("./home.js").then(module => module.loadHomeScreen());
   });
+
+  // 정렬 옵션 변경 이벤트
+  document.getElementById("sortOption").addEventListener("change", (e) => {
+    loadCardsFromDB(type, e.target.value);
+  });
+
+  loadCardsFromDB(type, "popular");
 }
 
-// 예시 카드 생성
-function createCards() {
-  const cards = [];
+async function loadCardsFromDB(type) {
+  const grid = document.getElementById("seeAllGrid");
 
-  for (let i = 0; i < 10; i++) {
-    cards.push(`
-      <div class="seeall-card">
-        <img src="assets/places/성심당.svg" alt="이미지">
-        <p class="place-name">성심당 본점 ${i + 1}</p>
-        <p class="rating">⭐ 4.7</p>
-      </div>
-    `);
+  try {
+    // 🔥 Firestore에서 데이터 가져오기
+    const qSnapshot = await getDocs(collection(db, "Places"));
+
+    let cardsHTML = "";
+
+    qSnapshot.forEach(doc => {
+      const data = doc.data();
+
+      // 카드 HTML 생성
+      cardsHTML += `
+        <div class="seeall-card">
+          <img src="${data.image_url}" alt="${data.name}">
+          <p class="place-name">${data.name}</p>
+          <p class="rating">⭐ ${data.rating}</p>
+          ${data.favorite
+          ? `<p class="favorite">❤️ 즐겨찾기</p>`
+          : `<p class="favorite">♡</p>`
+        }
+        </div>
+      `;
+    });
+
+    grid.innerHTML = cardsHTML;
+
+  } catch (err) {
+    console.error("카드 로딩 오류:", err);
+    grid.innerHTML = "<p>데이터를 불러오는 중 오류가 발생했습니다.</p>";
   }
-
-  return cards.join("");
 }
+
