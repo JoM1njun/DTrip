@@ -37,7 +37,12 @@ export async function loadHomeScreen() {
 
   document.querySelectorAll(".see-all").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const type = btn.closest(".list-section").id.replace("Container", "");
+      const id = btn.closest(".list-section").id.replace("Container", "");
+      let type = id;
+      if (id === "userRecommend") type = "user";
+      else if (id === "popular") type = "popular";
+      else if (id === "recommend") type = "recommend";
+
       loadSeeAllPage(type);
       hideHeader();
     });

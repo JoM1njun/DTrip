@@ -92,6 +92,11 @@
   justify-items: center;
 }
 
+.seeall-card {
+  position: relative;
+  /* 오버레이 기준 */
+}
+
 /* 정사각형 카드 */
 .seeall-card {
   background: #fff;
@@ -99,7 +104,7 @@
   box-shadow: 0 0px 2px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   width: 170px;
-  height: 170px;
+  height: 180px;
   aspect-ratio: 1 / 1;
   /* 핵심: 정사각형 비율 유지 */
   display: flex;
@@ -110,13 +115,23 @@
 /* 이미지 영역: 정사각형 */
 .seeall-card img {
   width: 100%;
-  height: 60%;
+  height: 100%;
   object-fit: cover;
+}
+
+.seeall-card .place-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: rgba(256, 256, 256, 0.4);
 }
 
 /* 이름 + 평점 */
 .place-name {
-  margin: 0px 5px 0px 5px;
+  margin: 0px 5px 4px 10px;
+  font-size: 15px;
   font-weight: bold;
 }
 
@@ -127,7 +142,7 @@
 }
 
 .rating {
-  margin: 0px 0px 4px 5px;
+  margin: 0px 0px 4px 10px;
   color: #000;
   font-size: 14px;
   font-weight: bold;
@@ -139,13 +154,13 @@
 }
 
 .review {
-  margin: 0px 5px 4px 0px;
-  color: #666;
-  font-size: 12px;
+  margin: 0px 10px 4px 0px;
+  color: #333;
+  font-size: 11px;
 }
 
 .favorite {
-  margin: 0px 0px 0px 5px;
+  margin: 0px 0px 0px 10px;
   font-size: 12px;
   color: #000;
   font-weight: bold;

@@ -38,7 +38,7 @@ export function loadSeeAllPage(type) {
       <div class="sort-section">
         <select id="sortOption">
           <option value="popular">인기순</option>
-          <option value="rating">평점순</option>
+          <option value="rating">리뷰순</option>
           <option value="latest">최신순</option>
         </select>
       </div>
@@ -61,43 +61,73 @@ export function loadSeeAllPage(type) {
     loadCardsFromDB(type, e.target.value);
   });
 
-  loadCardsFromDB(type, "popular");
+  loadCardsFromDB(type);
 }
 
-async function loadCardsFromDB(type) {
+async function loadCardsFromDB(type, sortOption = null) {
   const grid = document.getElementById("seeAllGrid");
 
   try {
     // 🔥 Firestore에서 데이터 가져오기
     const qSnapshot = await getDocs(collection(db, "Places"));
 
-    let cardsHTML = "";
+    let places = qSnapshot.docs.map(doc => doc.data());
+    console.log(places);
 
     qSnapshot.forEach(doc => {
-      const data = doc.data();
-
-      // 카드 HTML 생성
-      cardsHTML += `
-        <div class="seeall-card">
-          <img src="${data.image_url}" alt="${data.name}">
-          <p class="place-name">${data.name}</p>
-          <div class="review_rating">
-            <p class="rating"><img src="assets/icons/star.svg"/> ${data.rating}</p>
-            <p class="review"> (${data.review.toLocaleString()} Reviews) </p>
-          </div> 
-          <div class=favorite>
-          <img src="assets/icons/heart.svg"/>
-            ${data.favorite}명이 좋아함
-          </div>
-        </div>
-      `;
+      places.data = doc.data()
     });
 
-    grid.innerHTML = cardsHTML;
+    if (!sortOption) {
+      // 기본 정렬 기준
+      if (type === "popular") {
+        sortOption = "review";  // 리뷰 많은 순
+      } else if (type === "recommend") {
+        sortOption = "favorite"; // 좋아요 많은 순
+      } else if (type === "user") {
+        sortOption = "latest"; // 최신순
+      }
+    }
+
+    if (sortOption === "rating") {
+      places.sort((a, b) => b.rating - a.rating);
+    }
+
+    else if (sortOption === "review") {
+      places.sort((a, b) => (b.review ?? 0) - (a.review ?? 0));
+    }
+
+    else if (sortOption === "favorite") {
+      places.sort((a, b) => (b.favorite ?? 0) - (a.favorite ?? 0));
+    }
+
+    else if (sortOption === "latest") {
+      places.sort((a, b) => {
+        return (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0);
+      });
+    }
+
+    // 카드 HTML 생성
+    grid.innerHTML = places.map(data => `
+      <div class="seeall-card">
+        <img src="${data.image_url}" alt="${data.name}">
+        <div class="place-info">
+        <p class="place-name">${data.name}</p>
+
+        <div class="review_rating">
+          <p class="rating"><img src="assets/icons/star.svg"/> ${data.rating}</p>
+          <p class="review">(${data.review?.toLocaleString() ?? 0})</p>
+        </div>
+
+        <p class="favorite">
+          <img src="assets/icons/heart.svg"/>${data.favorite?.toLocaleString() ?? 0}명이 좋아함
+        </p>
+        </div>
+      </div>
+    `).join("");
 
   } catch (err) {
     console.error("카드 로딩 오류:", err);
     grid.innerHTML = "<p>데이터를 불러오는 중 오류가 발생했습니다.</p>";
   }
 }
-
