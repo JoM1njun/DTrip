@@ -1,7 +1,7 @@
 import { db } from "../database/firebase.js";  // 네 프로젝트의 Firestore 객체
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 import { showHome } from "../app.js";
-
+import { loadPlaceDetailPage } from "./detail.js";
 
 export function loadSeeAllPage(type) {
   const content = document.getElementById("content");
@@ -61,6 +61,14 @@ export function loadSeeAllPage(type) {
     loadCardsFromDB(type, e.target.value);
   });
 
+  document.addEventListener("click", (e) => {
+    const card = e.target.closest(".card");
+    if (!card) return;
+
+    const id = card.dataset.id;
+    loadPlaceDetailPage(id);
+  });
+
   loadCardsFromDB(type);
 }
 
@@ -109,7 +117,7 @@ async function loadCardsFromDB(type, sortOption = null) {
 
     // 카드 HTML 생성
     grid.innerHTML = places.map(data => `
-      <div class="seeall-card">
+      <div class="seeall-card" data-id="${data.id}">
         <img src="${data.image_url}" alt="${data.name}">
         <div class="place-info">
         <p class="place-name">${data.name}</p>

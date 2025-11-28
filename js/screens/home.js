@@ -3,6 +3,7 @@ import { getPopularPlaces } from "../components/popularPlace.js";
 import { getRecommendPlaces } from "../components/recommendPlace.js";
 import { getUserRecommendPlaces } from "../components/userrecommendPlace.js";
 import { hideHeader } from "../app.js";
+import { loadPlaceDetailPage } from "./detail.js";
 
 console.log("🏠 Home screen loaded!");
 
@@ -48,6 +49,15 @@ export async function loadHomeScreen() {
     });
   });
 
+  document.addEventListener("click", (e) => {
+    const card = e.target.closest(".card, .seeall-card");
+    if (!card) return;
+
+    const id = card.dataset.id;
+    console.log("Card clicked, ID:", id);
+    loadPlaceDetailPage(id);
+  });
+
   await loadPopularPlacesUI();
   await loadRecommendPlacesUI();
   await loadUserRecommendPlacesUI();
@@ -61,7 +71,7 @@ async function loadPopularPlacesUI() {
   container.innerHTML = list
     .map(
       (place) => `
-    <div class="card">
+    <div class="card" data-id="${place.name}">
       <img src="${place.image_url}" alt="${place.name}">
       <div class="info">
         <h3>${place.name}</h3>
@@ -82,7 +92,7 @@ async function loadRecommendPlacesUI() {
   container.innerHTML = list
     .map(
       (place) => `
-    <div class="card">
+    <div class="card" data-id="${place.name}">
       <img src="${place.image_url}" alt="${place.name}">
       <div class="info">
         <h3>${place.name}</h3>

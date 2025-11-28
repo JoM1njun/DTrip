@@ -2,6 +2,7 @@ import { loadHomeScreen } from "./screens/home.js";
 import { loadMapScreen } from "./screens/map.js";
 import { loadFavoriteScreen } from "./screens/favorite.js";
 import { loadMenuScreen } from "./screens/menu.js";
+import { loadPlaceDetailPage } from "./screens/detail.js";
 
 export function showHome() {
   const header = document.getElementById("header");

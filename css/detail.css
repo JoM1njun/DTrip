@@ -1,0 +1,168 @@
+.detail-page {
+    width: 100%;
+    position: relative;
+    font-family: 'Pretendard', sans-serif;
+}
+
+.detail-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.detail-header .detail-map {
+    margin-left: auto;
+    font-size: 12px;
+    color: #007AFF;
+    cursor: pointer;
+}
+
+/* 뒤로가기 버튼 */
+.detail-back-btn {
+    position: relative;
+    top: 40px;
+    left: 15px;
+    background: none;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    align-items: center;
+    z-index: 100;
+}
+
+.detail-back-btn img {
+    width: 17px;
+    height: 17px;
+}
+
+/* 상단 전체 이미지 */
+.detail-image-container {
+    width: 95%;
+    height: 200px;
+    margin: 15% auto 0;
+    overflow: hidden;
+    position: relative;
+    border-radius: 15px;
+}
+
+.detail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* 내용 전체 */
+.detail-info-container {
+    padding: 0px 15px;
+}
+
+/* 제목 */
+.detail-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 0px;
+}
+
+/* 설명 */
+.detail-description {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin: 15px 0px 18px 0px;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    /* 최대 3줄까지만 표시 */
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    line-height: 1.5;
+    /* 줄 간격 */
+    max-height: calc(1.5em * 4);
+}
+
+/* 아이콘 + 텍스트 */
+.detail-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0px;
+    margin-bottom: 12px;
+    margin-left: auto;
+}
+
+.detail-row p {
+    margin: 3px;
+    font-size: 14px;
+    color: #000;
+}
+
+.detail-row img {
+    width: 20px;
+    height: 20px;
+}
+
+/* 리뷰와 좋아요 */
+.detail-rating {
+    display: flex;
+    padding: 0;
+    height: 25px;
+    font-size: 15px;
+    gap: 5px;
+    margin-top: 0px;
+}
+
+.detail-rating .d_rating {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    font-weight: bold;
+    margin: 0px;
+}
+
+.detail-rating .d_reviews {
+    font-size: 12px;
+    color: #555;
+    margin: 5px 0px 0px 0px;
+}
+
+.detail-rating img {
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+}
+
+.homepage {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.homepage-icon img {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+/* 지도 버튼 */
+.detail-map-btn {
+    width: 100%;
+    padding: 14px;
+    background: #007AFF;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+    margin-top: 12px;
+    cursor: pointer;
+}
+
+.detail-facilities {
+    margin-top: 40px;
+    font-size: 24px;
+    font-weight: 700;
+}
