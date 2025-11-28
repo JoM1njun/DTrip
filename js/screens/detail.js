@@ -49,31 +49,65 @@ export async function loadPlaceDetailPage(id) {
 
             <!-- 운영시간 -->
             <div class="detail-row">
-                <p class="detail_time">${data.time_start ?? "운영 시간 정보 없음"} ~ ${data.time_end ?? "운영 시간 정보 없음"}</p>
+                <p class="detail_time"><img src="assets/icons/time.svg" />${data.time_start ?? "운영 시간 정보 없음"} ~ ${data.time_end ?? "운영 시간 정보 없음"}</p>
             <!-- 전화번호 -->
                 <p class="detail_phone"><img src="assets/icons/phone.svg" /> ${data.phone ?? "전화번호 없음"}</p>
             </div>
         </div>
 
         <div class="homepage">
-        <a href="${"https://www.instagram.com/sungsimdang_official/" ?? "#"}" target="_blank" class="homepage-icon">
-            <img src="assets/icons/instagram.svg" />
-        </a>
-        <a href="${"https://www.sungsimdang.co.kr/" ?? "#"}" target="_blank" class="homepage-icon">
-            <img src="assets/icons/home.svg" />
-        </a>
+            <a href="${"https://www.sungsimdang.co.kr/" ?? "#"}" target="_blank" class="homepage-icon">
+                <img src="assets/icons/home.svg" />
+            </a>
+            <a href="${"https://www.instagram.com/sungsimdang_official/" ?? "#"}" target="_blank" class="homepage-icon">
+                <img src="assets/icons/instagram.svg" />
+            </a>
         </div>
 
         <!-- 설명 -->
         <p class="detail-description">${data.description ?? "설명 정보 없음"}</p>
 
-        <!-- 좋아요 / 리뷰 -->
-        <div class="detail-favoite">
-          <p><img src="assets/icons/heart.svg" /> ${data.favorite?.toLocaleString() ?? 0}</p>
-        </div>
-
         <div class="detail-facilities">
-            <p>Facilities</p>
+            <h1>Facilities</h1>
+
+            <div class="facility-row">
+                <div class="facility-box">
+                    <img src="assets/facilities/wifi.svg" alt="와이파이 아이콘" title="무료 Wi-Fi 제공" />
+                    <span>
+                        WiFi
+                    </span>
+                </div>
+            
+                <div class="facility-box">
+                    <img src="assets/facilities/card.svg" alt="카드 아이콘" title="카드 이용 가능" />
+                    <span>
+                        Card
+                    </span>
+                </div>
+            
+                <div class="facility-box">
+                    <img src="assets/facilities/parking.svg" alt="주차장 아이콘" title="주차장 이용 가능" />
+                    <span>
+                        Parking
+                    </span>
+                </div>
+            
+                <div class="facility-box">
+                    <img src="assets/facilities/cart.svg" alt="카트 아이콘" title="카트 이용 가능" />
+                    <span>
+                        Cart
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 좋아요 / 리뷰 -->
+        <div class="detail-favorite">
+        <p id="favoriteCount">${data.favorite ?? 0}명이 좋아함</p>
+            <button id="favoriteBtn" class="favorite-btn">
+            
+                <img id="heartIcon" src="assets/icons/heart.svg" />
+            </button>
         </div>
         
       </div>
