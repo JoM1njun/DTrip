@@ -58,6 +58,16 @@ export async function loadHomeScreen() {
     loadPlaceDetailPage(id);
   });
 
+  document.querySelectorAll(".category-item").forEach(item => {
+    item.addEventListener("click", () => {
+      const type = item.dataset.type;
+
+      if (type === "festival") {
+        import("./festival.js").then(m => m.loadFestivalList());
+      }
+    });
+  });
+
   await loadPopularPlacesUI();
   await loadRecommendPlacesUI();
   await loadUserRecommendPlacesUI();
