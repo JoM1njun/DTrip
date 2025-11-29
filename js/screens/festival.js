@@ -16,8 +16,20 @@ export async function loadFestivalList() {
         <button id="backHome" class="back-btn">
           <img src="assets/icons/back.svg"/>
         </button>
-        <h2>축제</h2>
       </section>
+
+       <div class="festival-title">
+        <h2>Festival</h2>
+       </div>
+
+       <div class="festival-search-box">
+            <input id="search" type="text" placeholder="Search">
+            <span class="festival-search-icon">
+                <img src="assets/icons/search.svg" alt="search" />
+            </span>
+        </div>
+
+       
 
       <section class="festival-list" id="festivalList">
         <p>로딩 중...</p>

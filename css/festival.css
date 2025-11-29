@@ -6,14 +6,61 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 15px;
-    border-bottom: 1px solid #eee;
+    padding: 15px 15px 0px 15px;
 }
 
-.festival-header h2,
-.festival-detail-header h2 {
-    font-size: 20px;
-    font-weight: 700;
+.festival-title {
+    height: 30px;
+    margin: 0;
+    text-align: center;
+    flex: 1;
+}
+
+.festival-title h2 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 500;
+}
+
+.festival-search-box {
+    height: 20px;
+    width: 85%;
+    max-width: 380px;
+    margin: 5px auto;
+    /* 🔥 가운데 정렬 */
+    margin-bottom: 15px;
+    /* 리스트와 간격 */
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #ddd;
+    border-radius: 100px;
+    background: #fff;
+    padding: 10px 12px;
+}
+
+.festival-search-box input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    padding: 10px 10px 10px 10px;
+    /* 위, 오른쪽, 아래, 왼쪽 */
+    font-size: 14px;
+    border: none;
+    background: none;
+
+}
+
+.festival-search-icon {
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+}
+
+.festival-search-icon img {
+    width: 18px;
+    height: 18px;
 }
 
 .back-btn img {
@@ -133,15 +180,8 @@
     height: 480px;
     object-fit: cover;
     border-radius: 0px;
-    margin: 0 auto;
+    margin: 5px auto;
     box-shadow: 0 0px 2px rgba(0, 0, 0, 0.1);
-}
-
-.festival-detail-info {
-    margin: 15px;
-    background: #fff;
-    border-radius: 15px;
-    border: 1px solid #AEBCFE;
 }
 
 /* 상세 정보 */
@@ -162,6 +202,13 @@
     line-height: 1.5;
 }
 
+.festival-detail-info {
+    margin: 10px 15px;
+    background: #fff;
+    border-radius: 15px;
+    border: 1px solid #AEBCFE;
+}
+
 .festival-detail-info img {
     width: 15px;
     height: 15px;
@@ -169,23 +216,101 @@
     vertical-align: middle;
 }
 
-/* 버튼 섹션 */
-.detail-buttons {
-    margin-top: 25px;
-    padding: 0 15px;
+.festival-button-container {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0px 15px;
 }
 
-.detail-buttons button {
-    padding: 14px;
-    border-radius: 12px;
-    font-size: 16px;
+
+.festival-website-btn {
+    position: relative;
+    /* 자식 absolute 기준점 */
+    flex: 1 1 calc(50% - 10px);
+    overflow: hidden;
+    /* 텍스트가 넘치지 않게 */
+    padding: 0px 5px;
+    /* 내부 padding 제거 */
+    border-radius: 15px;
+    height: 60px;
+    /* 버튼 높이 */
+    display: block;
     font-weight: 600;
-    border: none;
+    background: #fff;
+    border: 1px solid #AEBCFE;
     cursor: pointer;
-    transition: 0.2s ease;
+}
+
+/* 버튼 내부 구조 */
+.btn-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    font-size: 10px;
+}
+
+.btn-bg {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 40%;
+    height: 100%;
+    object-fit: cover;
+    transform: translateY(-50%);
+    z-index: 1;
+    /* 뒤 */
+    opacity: 0.8;
+    /* 이미지 너무 강하면 줄임 */
+}
+
+.btn-text {
+    position: absolute;
+    z-index: 2;
+    padding: 5px 0px;
+    /* 위 */
+    bottom: 0px;
+    left: auto;
+    right: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    color: #000;
+    /* 필요시 white로 변경 */
+}
+
+.btn-text .subtitle {
+    color: #333;
+    font-weight: 500;
+    align-self: flex-end;
+}
+
+.festival-website-btn p {
+    margin: 0;
+}
+
+/* 오른쪽 열 버튼 */
+.festival-button-container button:nth-child(2n) .btn-text {
+    left: 5px;
+    right: auto;
+    text-align: right;
+}
+
+.festival-button-container button:nth-child(2n) .btn-text .title {
+    /* 타이틀을 왼쪽 정렬 */
+    align-self: flex-start;
+}
+
+.festival-button-container button:nth-child(2n) .btn-text .subtitle {
+    /* 서브타이틀을 왼쪽 정렬 */
+    align-self: flex-start;
+}
+
+.festival-button-container button:nth-child(2n) img {
+    /* 이미지를 텍스트 오른쪽으로 이동 */
+    left: auto;
+    right: 0;
 }
 
 /* 지도 버튼 */
