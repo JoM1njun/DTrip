@@ -1,8 +1,7 @@
 import { loadHomeScreen } from "./screens/home.js";
-import { loadMapScreen } from "./screens/map.js";
 import { loadFavoriteScreen } from "./screens/favorite.js";
 import { loadMenuScreen } from "./screens/menu.js";
-import { loadPlaceDetailPage } from "./screens/detail.js";
+import { loadMapScreen } from "./screens/map.js";
 
 export function showHome() {
   const header = document.getElementById("header");
@@ -25,10 +24,11 @@ export function hideHeader() {
   document.getElementById("tagContainer").classList.add("hidden");
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
   //const header = document.querySelector("header"); // ← 헤더 DOM
 
   // 🔹 기본 화면 = 홈
+  await requestUserLocation();
   showHome();
   loadHomeScreen();
 
@@ -59,3 +59,30 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+export let userLocation = null;
+
+export function requestUserLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      alert("이 브라우저는 위치 정보를 지원하지 않습니다.");
+      return reject();
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+
+        userLocation = { lat, lng };
+        console.log("📍 위치 저장됨:", userLocation);
+
+        resolve(userLocation);
+      },
+      (err) => {
+        console.error("위치 정보를 가져올 수 없습니다:", err);
+        reject(err);
+      }
+    );
+  });
+}

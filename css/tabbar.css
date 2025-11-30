@@ -12,7 +12,8 @@
   background: white;
   border-top-left-radius: 25px;
   border-top-right-radius: 25px;
-  box-shadow: 0 0px 2px rgba(0,0,0,0.4);
+  box-shadow: 0 0px 2px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
 }
 
 .tab-item {
@@ -35,5 +36,6 @@
 }
 
 #content {
-  padding-bottom: 80px; /* tab bar 공간 확보 */
+  padding-bottom: 80px;
+  /* tab bar 공간 확보 */
 }
