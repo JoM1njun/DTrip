@@ -18,6 +18,9 @@
   },
   "homepage": "https://github.com/JoM1njun/DTrip#readme",
   "dependencies": {
-    "firebase": "^12.6.0"
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "firebase": "^12.6.0",
+    "node-fetch": "^3.3.2"
   }
 }

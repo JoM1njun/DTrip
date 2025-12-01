@@ -36,6 +36,7 @@ export async function loadFestivalList() {
       </section>
     `;
 
+    // 뒤로가기 버튼
     document.getElementById("backHome").addEventListener("click", () => {
         import("./home.js").then(m => m.loadHomeScreen());
         document.getElementById("header").style.display = "flex";
@@ -58,7 +59,16 @@ export async function loadFestivalList() {
                     <div class="festival-name">${f.name}</div>
                 </div>
                 <img src="${f.image_url}">
-                <div class="festival-phone"><img src="assets/festival/festival_icons/phone.svg" />${f.phone}</div>
+                <div class="festival-phone-sns">
+                    <div class="festival-phone">
+                        <img src="assets/festival/festival_icons/phone.svg" />
+                        <span>${f.phone}</span>
+                    </div>
+                    <div class="festival-sns">
+                        <img src="assets/icons/instagram.svg" alt="instagram"></img>
+                        <img src="assets/icons/home.svg" alt="home"></img>
+                    </div>
+                </div>
             </div>
         </div>
     `).join("");

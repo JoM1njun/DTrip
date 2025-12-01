@@ -36,6 +36,7 @@ export async function loadHomeScreen() {
     </section>
   `;
 
+  // see all 클릭 시 자세히 보기 화면으로 이동
   document.querySelectorAll(".see-all").forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = btn.closest(".list-section").id.replace("Container", "");
@@ -49,6 +50,7 @@ export async function loadHomeScreen() {
     });
   });
 
+  // 각 장소들의 Card 클릭 시 해당 장소의 상세정보 화면으로 이동
   document.addEventListener("click", (e) => {
     const card = e.target.closest(".card, .seeall-card");
     if (!card) return;
@@ -58,6 +60,7 @@ export async function loadHomeScreen() {
     loadPlaceDetailPage(id);
   });
 
+  // 축제 버튼 클릭 시 축제 화면으로 이동
   document.querySelectorAll(".category-item").forEach(item => {
     item.addEventListener("click", () => {
       const type = item.dataset.type;

@@ -1,6 +1,6 @@
 import { loadHomeScreen } from "../screens/home.js";
 import { loadFavoriteScreen } from "../screens/favorite.js";
-import { loadInfoScreen } from "../screens/info.js";
+import { loadMapScreen } from "../screens/map.js";
 import { loadMenuScreen } from "../screens/menu.js";
 import { showHome, hideHeader } from "./../app.js";
 
@@ -31,9 +31,9 @@ tabs.forEach(tab => {
         loadFavoriteScreen();
         break;
 
-      case "info":
+      case "map":
         hideHeader();
-        loadInfoScreen();
+        loadMapScreen();
         break;
 
       case "menu":

@@ -6,12 +6,14 @@ export async function loadFestivalDetail(id) {
     const content = document.getElementById("content");
     content.innerHTML = `<p>로딩 중...</p>`;
 
+    // Festival 데이터 가져옴
     const snap = await getDoc(doc(db, "Festival", id));
     const f = snap.data();
 
     // 🔥 해당 축제의 버튼 목록 가져오기
     const buttons = festivalButtons[id] ?? [];
 
+    // 공식 사이트로 이어지거나 SNS로 이어지는 버튼
     let dynamicButtons = buttons
         .map(btn => `
             <button class="festival-website-btn" onclick="window.open('${btn.url}', '_blank')">
@@ -51,6 +53,7 @@ export async function loadFestivalDetail(id) {
     });
 }
 
+// 각 축제들의 홈페이지 or SNS
 export const festivalButtons = {
     "2025 대전 0시 축제": [  // 0시축제
         {

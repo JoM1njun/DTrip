@@ -86,7 +86,6 @@
     display: flex;
     background: #AEBCFE;
     width: 170px;
-    height: 315px;
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 0px 2px rgba(0, 0, 0, 0.3);
@@ -102,12 +101,13 @@
 .festival-card .festival-info {
     flex: 1;
     display: flex;
+    height: 310px;
     flex-direction: column;
 }
 
 .festival-card img {
     width: 170px;
-    height: 240px;
+    height: 235px;
     object-fit: cover;
 }
 
@@ -137,10 +137,17 @@
     max-height: calc(1em * 1);
 }
 
-.festival-phone {
+.festival-phone-sns {
     font-size: 13px;
     padding: 5px 10px;
     display: flex;
+    gap: 5px;
+    justify-content: space-between;
+}
+
+.festival-phone {
+    display: flex;
+    align-items: center;
     gap: 5px;
 }
 
@@ -148,6 +155,24 @@
     padding-top: 4px;
     width: 13px;
     height: 13px;
+}
+
+.festival-phone span {
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.festival-sns {
+    display: flex;
+    right: 10px;
+    left: auto;
+    gap: 5px;
+}
+
+.festival-sns img {
+    padding-top: 4px;
+    width: 14px;
+    height: 14px;
 }
 
 

@@ -61,6 +61,7 @@ export function loadSeeAllPage(type) {
     loadCardsFromDB(type, e.target.value);
   });
 
+  // 장소 Card 클릭 시 장소의 상세정보 화면으로 이동
   document.addEventListener("click", (e) => {
     const card = e.target.closest(".card");
     if (!card) return;
@@ -72,6 +73,7 @@ export function loadSeeAllPage(type) {
   loadCardsFromDB(type);
 }
 
+// Database에서 장소들의 Data가져옴
 async function loadCardsFromDB(type, sortOption = null) {
   const grid = document.getElementById("seeAllGrid");
 
@@ -115,7 +117,7 @@ async function loadCardsFromDB(type, sortOption = null) {
       });
     }
 
-    // 카드 HTML 생성
+    // 각 장소들의 Card HTML 생성
     grid.innerHTML = places.map(data => `
       <div class="seeall-card" data-id="${data.id}">
         <img src="${data.image_url}" alt="${data.name}">

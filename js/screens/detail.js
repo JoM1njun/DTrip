@@ -10,9 +10,11 @@ export async function loadPlaceDetailPage(id) {
     document.getElementById("tagContainer").style.display = "none";
     document.getElementById("tabbar").style.display = "none";
 
+    // Places에서 데이터 가져옴
     const ref = doc(db, "Places", id.toString());
     const snap = await getDoc(ref);
 
+    // Data가 존재하지 않음
     if (!snap.exists()) {
         content.innerHTML = "<p>존재하지 않는 장소입니다.</p>";
         return;
