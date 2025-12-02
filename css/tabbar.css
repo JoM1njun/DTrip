@@ -30,6 +30,10 @@
   font-size: 13px;
 }
 
+.tab-item.active img {
+  color: #b299ff;
+}
+
 .tab-item.active p {
   color: #b299ff;
   font-weight: bold;

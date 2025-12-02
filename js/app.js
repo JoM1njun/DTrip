@@ -2,6 +2,26 @@ import { loadHomeScreen } from "./screens/home.js";
 import { loadFavoriteScreen } from "./screens/favorite.js";
 import { loadMenuScreen } from "./screens/menu.js";
 import { loadMapScreen } from "./screens/map.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+
+export let currentUser = null;
+
+// onAuthStateChanged(auth, (user) => {
+//   if (user) {
+//     console.log("로그인 유지됨", user.uid);
+//     currentUser = user;
+//     updateMenuProfile(user); 
+//   } else {
+//     console.log("로그아웃 상태");
+//     currentUser = null;
+//     updateMenuProfile(null);
+//   }
+// });
+
+// export function getCurrentUser() {
+//   return currentUser;
+// }
+
 
 export function showHome() {
   const header = document.getElementById("header");
