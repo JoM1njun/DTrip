@@ -2,6 +2,7 @@ import { loadHomeScreen } from "./screens/home.js";
 import { loadFavoriteScreen } from "./screens/favorite.js";
 import { loadMenuScreen } from "./screens/menu.js";
 import { loadMapScreen } from "./screens/map.js";
+import { setActive } from "./components/tabbar.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 
 export let currentUser = null;
@@ -10,7 +11,7 @@ export let currentUser = null;
 //   if (user) {
 //     console.log("로그인 유지됨", user.uid);
 //     currentUser = user;
-//     updateMenuProfile(user); 
+//     updateMenuProfile(user);
 //   } else {
 //     console.log("로그아웃 상태");
 //     currentUser = null;
@@ -21,7 +22,6 @@ export let currentUser = null;
 // export function getCurrentUser() {
 //   return currentUser;
 // }
-
 
 export function showHome() {
   const header = document.getElementById("header");
@@ -50,34 +50,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   // 🔹 기본 화면 = 홈
   await requestUserLocation();
   showHome();
+  // 초기 화면: Home
   loadHomeScreen();
-
-  // 탭바 이벤트 등록
-  document.getElementById("tabbar").addEventListener("click", (e) => {
-    const target = e.target.closest(".tab-item");
-    if (!target) return;
-
-    const screen = target.dataset.screen;
-
-    switch (screen) {
-      case "home":
-        showHome();
-        loadHomeScreen();
-        break;
-      case "map":
-        hideHeader();
-        loadMapScreen();
-        break;
-      case "favorite":
-        hideHeader();
-        loadFavoriteScreen();
-        break;
-      case "menu":
-        hideHeader();
-        loadMenuScreen();
-        break;
-    }
-  });
+  setActive("home");
 });
 
 // 사용자의 처음 위치 = null

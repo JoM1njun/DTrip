@@ -25,17 +25,18 @@
   width: 28px;
 }
 
+.tabbar .tab-item.active img {
+  opacity: 1;
+  filter: invert(52%) sepia(78%) saturate(600%) hue-rotate(230deg) !important;
+}
+
 .tab-item p {
   margin: 4px 0 0;
   font-size: 13px;
 }
 
-.tab-item.active img {
-  color: #b299ff;
-}
-
-.tab-item.active p {
-  color: #b299ff;
+.tabbar .tab-item.active p {
+  color: #b299ff !important;
   font-weight: bold;
 }
 

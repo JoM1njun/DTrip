@@ -118,7 +118,7 @@ async function loadRecommendPlacesUI() {
     .join("");
 }
 
-// 🔹 추천 장소 렌더링
+// 🔹 유저 추천 장소 렌더링
 async function loadUserRecommendPlacesUI() {
   const list = await getUserRecommendPlaces();
   const container = document.getElementById("userRecommendCards");
@@ -126,12 +126,14 @@ async function loadUserRecommendPlacesUI() {
   container.innerHTML = list
     .map(
       (place) => `
-    <div class="card">
-      <img src="${place.image_url}" alt="${place.name}">
-      <div class="info">
-        <h3>${place.name}</h3>
-        <p class=address>${place.address}</p>
-        <div class="rating">⭐ ${place.rating}</div>
+    <div class="user-card">
+      <div class="user-card-images">
+        <img src="${place.image}">
+      </div>
+      <div class="user-info">
+        <h3 class="user-name">${place.name}</h3>
+        <p class="user-title">${place.title}</p>
+        <div class="user-favorite"><img src="assets/icons/heart.svg" /> ${place.favorite}</div>
       </div>
     </div>
   `

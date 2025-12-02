@@ -5,43 +5,44 @@ import { loadMenuScreen } from "../screens/menu.js";
 import { showHome, hideHeader } from "./../app.js";
 
 const content = document.getElementById("content");
-const tabs = document.querySelectorAll(".tab-item");
+let tabs = [];
 
-function setActive(page) {
-  tabs.forEach(t => t.classList.remove("active"));
+// tabbar 클릭 시 색 변경
+export function setActive(page) {
+  tabs.forEach((t) => t.classList.remove("active"));
   document.querySelector(`.tab-item[data-page="${page}"]`)?.classList.add("active");
 }
 
-// 초기 화면: Home
-loadHomeScreen();
-setActive("home");
+window.addEventListener("DOMContentLoaded", () => {
+  tabs = document.querySelectorAll(".tab-item");
 
-tabs.forEach(tab => {
-  tab.addEventListener("click", () => {
-    const page = tab.dataset.page;
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const page = tab.dataset.page;
 
-    switch (page) {
-      case "home":
-        showHome();
-        loadHomeScreen();
-        break;
+      switch (page) {
+        case "home":
+          showHome();
+          loadHomeScreen();
+          break;
 
-      case "favorite":
-        hideHeader();
-        loadFavoriteScreen();
-        break;
+        case "favorite":
+          hideHeader();
+          loadFavoriteScreen();
+          break;
 
-      case "map":
-        hideHeader();
-        loadMapScreen();
-        break;
+        case "map":
+          hideHeader();
+          loadMapScreen();
+          break;
 
-      case "menu":
-        hideHeader();
-        loadMenuScreen();
-        break;
-    }
+        case "menu":
+          hideHeader();
+          loadMenuScreen();
+          break;
+      }
 
-    setActive(page);
+      setActive(page);
+    });
   });
 });
