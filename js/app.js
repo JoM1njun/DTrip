@@ -4,6 +4,7 @@ import { loadMenuScreen } from "./screens/menu.js";
 import { loadMapScreen } from "./screens/map.js";
 import { setActive } from "./components/tabbar.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+import { loadTags, loadCategories } from "./components/categoryTagLoader.js";
 
 export let currentUser = null;
 
@@ -46,6 +47,9 @@ export function hideHeader() {
 
 window.addEventListener("DOMContentLoaded", async () => {
   //const header = document.querySelector("header"); // ← 헤더 DOM
+
+  await loadCategories();
+  await loadTags();
 
   // 🔹 기본 화면 = 홈
   await requestUserLocation();
