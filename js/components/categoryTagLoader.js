@@ -20,8 +20,13 @@ export async function loadCategories() {
   wrapper.innerHTML = html;
 }
 
-export async function loadTags() {
-  const tagFilter = document.getElementById("tagFilter");
+export async function loadTags(target = "tagFilter") {
+  const tagFilter = document.getElementById(target);
+
+  if (!tagFilter) {
+    console.warn("❌ tagFilter DOM을 찾을 수 없습니다:", target);
+    return;
+  }
 
   const snapshot = await getDocs(collection(db, "TagFilter"));
   let html = "";

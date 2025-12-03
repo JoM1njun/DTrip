@@ -7,6 +7,12 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/f
 import { loadTags, loadCategories } from "./components/categoryTagLoader.js";
 
 export let currentUser = null;
+export let currentScreen = "home";
+
+export function setCurrentScreen(screen) {
+  currentScreen = screen;
+  console.log(currentScreen);
+}
 
 // onAuthStateChanged(auth, (user) => {
 //   if (user) {
@@ -49,7 +55,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   //const header = document.querySelector("header"); // ← 헤더 DOM
 
   await loadCategories();
-  await loadTags();
+  await loadTags("tagFilter");
 
   // 🔹 기본 화면 = 홈
   await requestUserLocation();

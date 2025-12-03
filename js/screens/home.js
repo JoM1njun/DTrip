@@ -41,7 +41,11 @@ export async function loadHomeScreen() {
     btn.addEventListener("click", () => {
       const id = btn.closest(".list-section").id.replace("Container", "");
       let type = id;
-      if (id === "userRecommend") type = "user";
+      if (id === "userRecommend") {
+        import("./user_seeall.js").then(m => m.loadUserSeeAll());
+        hideHeader();
+        return;
+      }
       else if (id === "popular") type = "popular";
       else if (id === "recommend") type = "recommend";
 

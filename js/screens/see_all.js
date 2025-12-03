@@ -1,19 +1,32 @@
-import { db } from "../database/firebase.js";  // 네 프로젝트의 Firestore 객체
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+import { db } from "../database/firebase.js";
+import {
+  collection,
+  getDocs,
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 import { showHome } from "../app.js";
 import { loadPlaceDetailPage } from "./detail.js";
+import { loadTags } from "../components/categoryTagLoader.js";
+import { setCurrentScreen } from "../app.js";
 
-export function loadSeeAllPage(type) {
+
+export let currentSeeAllType = null;
+
+export async function loadSeeAllPage(type) {
+  currentSeeAllType = type;
+  setCurrentScreen("seeall");
+
   const content = document.getElementById("content");
 
   // 🔥 헤더 숨기기
   document.querySelector("header").style.display = "none";
-  document.querySelector(".content-section").style.display = "none";
+  document.getElementById("categoryContainer").style.display = "none";
+  document.getElementById("tagContainer").style.display = "none";
+  document.getElementById("tabbar").style.display = "flex";
 
   const titles = {
     popular: "유명한 곳",
     recommend: "추천 장소",
-    user: "유저 추천"
+    user: "유저 추천",
   };
 
   content.innerHTML = `
@@ -27,13 +40,7 @@ export function loadSeeAllPage(type) {
 
     <!-- 🔖 태그 필터 (Home처럼 사용) -->
     <section id="tagContainer" class="filter-section">
-      <div class="tag-filter">
-        <span># 음식점</span>
-        <span># 관광</span>
-        <span># 식당</span>
-        <span># 카페</span>
-        <span># 미술관</span>
-      </div>
+      <div class="tag-filter" id="seeAlltagFilter"></div>
 
       <div class="sort-section">
         <select id="sortOption">
@@ -50,10 +57,12 @@ export function loadSeeAllPage(type) {
     </section>
   `;
 
+  await loadTags("seeAlltagFilter");
+
   // 🔙 뒤로가기 버튼 이벤트
   document.getElementById("backBtn").addEventListener("click", () => {
     showHome();
-    import("./home.js").then(module => module.loadHomeScreen());
+    import("./home.js").then((module) => module.loadHomeScreen());
   });
 
   // 정렬 옵션 변경 이벤트
@@ -63,10 +72,11 @@ export function loadSeeAllPage(type) {
 
   // 장소 Card 클릭 시 장소의 상세정보 화면으로 이동
   document.addEventListener("click", (e) => {
-    const card = e.target.closest(".card");
+    const card = e.target.closest(".card, .seeall-card");
     if (!card) return;
 
     const id = card.dataset.id;
+    console.log("Card clicked, ID:", id);
     loadPlaceDetailPage(id);
   });
 
@@ -81,17 +91,17 @@ async function loadCardsFromDB(type, sortOption = null) {
     // 🔥 Firestore에서 데이터 가져오기
     const qSnapshot = await getDocs(collection(db, "Places"));
 
-    let places = qSnapshot.docs.map(doc => doc.data());
+    let places = qSnapshot.docs.map((doc) => doc.data());
     console.log(places);
 
-    qSnapshot.forEach(doc => {
-      places.data = doc.data()
+    qSnapshot.forEach((doc) => {
+      places.data = doc.data();
     });
 
     if (!sortOption) {
       // 기본 정렬 기준
       if (type === "popular") {
-        sortOption = "review";  // 리뷰 많은 순
+        sortOption = "review"; // 리뷰 많은 순
       } else if (type === "recommend") {
         sortOption = "favorite"; // 좋아요 많은 순
       } else if (type === "user") {
@@ -101,41 +111,42 @@ async function loadCardsFromDB(type, sortOption = null) {
 
     if (sortOption === "rating") {
       places.sort((a, b) => b.rating - a.rating);
-    }
-
-    else if (sortOption === "review") {
+    } else if (sortOption === "review") {
       places.sort((a, b) => (b.review ?? 0) - (a.review ?? 0));
-    }
-
-    else if (sortOption === "favorite") {
+    } else if (sortOption === "favorite") {
       places.sort((a, b) => (b.favorite ?? 0) - (a.favorite ?? 0));
-    }
-
-    else if (sortOption === "latest") {
+    } else if (sortOption === "latest") {
       places.sort((a, b) => {
         return (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0);
       });
     }
 
     // 각 장소들의 Card HTML 생성
-    grid.innerHTML = places.map(data => `
-      <div class="seeall-card" data-id="${data.id}">
+    grid.innerHTML = places
+      .map(
+        (data) => `
+      <div class="seeall-card" data-id="${data.name}">
         <img src="${data.image_url}" alt="${data.name}">
         <div class="place-info">
         <p class="place-name">${data.name}</p>
 
         <div class="review_rating">
-          <p class="rating"><img src="assets/icons/star.svg"/> ${data.rating}</p>
+          <p class="rating"><img src="assets/icons/star.svg"/> ${
+            data.rating
+          }</p>
           <p class="review">(${data.review?.toLocaleString() ?? 0})</p>
         </div>
 
         <p class="favorite">
-          <img src="assets/icons/heart.svg"/>${data.favorite?.toLocaleString() ?? 0}명이 좋아함
+          <img src="assets/icons/heart.svg"/>${
+            data.favorite?.toLocaleString() ?? 0
+          }명이 좋아함
         </p>
         </div>
       </div>
-    `).join("");
-
+    `
+      )
+      .join("");
   } catch (err) {
     console.error("카드 로딩 오류:", err);
     grid.innerHTML = "<p>데이터를 불러오는 중 오류가 발생했습니다.</p>";

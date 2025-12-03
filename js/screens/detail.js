@@ -1,28 +1,33 @@
 import { db } from "../database/firebase.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+import {
+  doc,
+  getDoc,
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 import { loadHomeScreen } from "./home.js";
+import { loadSeeAllPage, currentSeeAllType } from "./see_all.js";
+import { currentScreen, showHome } from "../app.js";
 
 export async function loadPlaceDetailPage(id) {
-    const content = document.getElementById("content");
+  const content = document.getElementById("content");
 
-    document.getElementById("header").style.display = "none";
-    document.getElementById("categoryContainer").style.display = "none";
-    document.getElementById("tagContainer").style.display = "none";
-    document.getElementById("tabbar").style.display = "none";
+  document.getElementById("header").style.display = "none";
+  document.getElementById("categoryContainer").style.display = "none";
+  document.getElementById("tagContainer").style.display = "none";
+  document.getElementById("tabbar").style.display = "none";
 
-    // Places에서 데이터 가져옴
-    const ref = doc(db, "Places", id.toString());
-    const snap = await getDoc(ref);
+  // Places에서 데이터 가져옴
+  const ref = doc(db, "Places", id.toString());
+  const snap = await getDoc(ref);
 
-    // Data가 존재하지 않음
-    if (!snap.exists()) {
-        content.innerHTML = "<p>존재하지 않는 장소입니다.</p>";
-        return;
-    }
+  // Data가 존재하지 않음
+  if (!snap.exists()) {
+    content.innerHTML = "<p>존재하지 않는 장소입니다.</p>";
+    return;
+  }
 
-    const data = snap.data();
+  const data = snap.data();
 
-    content.innerHTML = `
+  content.innerHTML = `
     <div class="detail-page">
 
       <!-- 🔙 Back Button -->
@@ -46,28 +51,40 @@ export async function loadPlaceDetailPage(id) {
         </div>
 
         <div class="detail-rating">
-        <p class="d_rating"><img src="assets/icons/star.svg" /> ${data.rating ?? 0}</p>
+        <p class="d_rating"><img src="assets/icons/star.svg" /> ${
+          data.rating ?? 0
+        }</p>
         <p class="d_reviews">(${data.review?.toLocaleString() ?? 0} Reviews)</p>
 
             <!-- 운영시간 -->
             <div class="detail-row">
-                <p class="detail_time"><img src="assets/icons/time.svg" />${data.time_start ?? "운영 시간 정보 없음"} ~ ${data.time_end ?? "운영 시간 정보 없음"}</p>
+                <p class="detail_time"><img src="assets/icons/time.svg" />${
+                  data.time_start ?? "운영 시간 정보 없음"
+                } ~ ${data.time_end ?? "운영 시간 정보 없음"}</p>
             <!-- 전화번호 -->
-                <p class="detail_phone"><img src="assets/icons/phone.svg" /> ${data.phone ?? "전화번호 없음"}</p>
+                <p class="detail_phone"><img src="assets/icons/phone.svg" /> ${
+                  data.phone ?? "전화번호 없음"
+                }</p>
             </div>
         </div>
 
         <div class="homepage">
-            <a href="${"https://www.sungsimdang.co.kr/" ?? "#"}" target="_blank" class="homepage-icon">
+            <a href="${
+              "https://www.sungsimdang.co.kr/" ?? "#"
+            }" target="_blank" class="homepage-icon">
                 <img src="assets/icons/home.svg" />
             </a>
-            <a href="${"https://www.instagram.com/sungsimdang_official/" ?? "#"}" target="_blank" class="homepage-icon">
+            <a href="${
+              "https://www.instagram.com/sungsimdang_official/" ?? "#"
+            }" target="_blank" class="homepage-icon">
                 <img src="assets/icons/instagram.svg" />
             </a>
         </div>
 
         <!-- 설명 -->
-        <p class="detail-description">${data.description ?? "설명 정보 없음"}</p>
+        <p class="detail-description">${
+          data.description ?? "설명 정보 없음"
+        }</p>
 
         <div class="detail-facilities">
             <h1>Facilities</h1>
@@ -116,18 +133,18 @@ export async function loadPlaceDetailPage(id) {
     </div>
   `;
 
-    // 뒤로가기 기능
-    document.getElementById("detailBackBtn").addEventListener("click", () => {
-        document.getElementById("header").style.display = "flex";
-        document.getElementById("categoryContainer").style.display = "block";
-        document.getElementById("tagContainer").style.display = "block";
-        document.getElementById("tabbar").style.display = "flex";
+  // 뒤로가기 기능
+  document.getElementById("detailBackBtn").addEventListener("click", () => {
+    if (currentScreen === "seeall") {
+      loadSeeAllPage(currentSeeAllType);
+    } else {
+      showHome();
+      loadHomeScreen();
+    }
+  });
 
-        loadHomeScreen();
-    });
-
-    // 지도 보기 버튼 클릭
-    document.getElementById("openMapBtn").addEventListener("click", () => {
-        alert("지도 기능은 곧 연결됩니다!");
-    });
+  // 지도 보기 버튼 클릭
+  document.getElementById("openMapBtn").addEventListener("click", () => {
+    alert("지도 기능은 곧 연결됩니다!");
+  });
 }
