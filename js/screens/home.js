@@ -128,7 +128,10 @@ async function loadUserRecommendPlacesUI() {
       (place) => `
     <div class="user-card">
       <div class="user-card-images">
-        <img src="${place.image}">
+        ${place.images
+          .slice(0, 4)
+          .map((img) => `<img src="${img}"/>`)
+          .join("")}
       </div>
       <div class="user-info">
         <h3 class="user-name">${place.name}</h3>

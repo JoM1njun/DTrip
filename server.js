@@ -5,13 +5,17 @@ import cors from "cors";
 const app = express();
 app.use(cors());
 
-const SERVICE_KEY = "9152a33db8805474901b834fd11ad3fe3a2e69a432d7468eee1fde7afe57de2d";
+// const SERVICE_KEY = "9152a33db8805474901b834fd11ad3fe3a2e69a432d7468eee1fde7afe57de2d";
+const SERVICE_KEY = encodeURIComponent("36781dec23b439f774a5a628c913a453ef964b60b0e1aacf8b8ff7fdec8cee3f");
 const PORT = 3000;
 
 app.get("/api/routes", async (req, res) => {
+  const { cityCode, routeId } = req.query;
   const url =
-    `https://openapitraffic.daejeon.go.kr/api/rest/busRouteInfo/getBusRouteList` +
-    `?serviceKey=${SERVICE_KEY}`;
+    `https://apis.data.go.kr/1613000/BusRouteInfoInqireService/getRouteInfoIem?serviceKey=${SERVICE_KEY}` +
+    `&_type=xml` +
+    `&cityCode=${cityCode}`+
+    `&routeId=${routeId}`;
 
   try {
     const response = await fetch(url);
@@ -33,8 +37,8 @@ app.get("/api/routePath", async (req, res) => {
   }
 
   const url =
-    `https://apis.data.go.kr/1613000/BusRouteInfoInqireService/getRoutePathList` +
-    `?serviceKey=${SERVICE_KEY}` +
+    `https://apis.data.go.kr/1613000/BusRouteInfoInqireService/getRoutePathIem?serviceKey=${SERVICE_KEY}` +
+    `&_type=xml` +
     `&cityCode=${cityCode}` +
     `&routeId=${routeId}`;
 
@@ -66,10 +70,10 @@ app.get("/api/busPositions", async (req, res) => {
 
   try {
     const response = await fetch(url);
-    const data = await response.text();
-    res.send(data);
+    const xmlText = await response.text();
+    res.send(xmlText);
 
-    console.log("버스 위치 응답:", data);
+    console.log("버스 위치 응답:", xmlText);
   } catch (err) {
     console.error("버스 위치 API 오류:", err);
     res.status(500).send("Bus Position API Error");
