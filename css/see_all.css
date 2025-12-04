@@ -8,21 +8,6 @@
   /* 위, 오른쪽, 아래, 왼쪽 */
 }
 
-/* 뒤로가기 버튼 */
-.back-btn {
-  display: flex;
-  padding: 5px 0px 20px 5px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.back-btn img {
-  width: 18px;
-  height: 18px;
-}
-
 .seeall-header h2 {
   margin: 0;
   font-size: 26px;

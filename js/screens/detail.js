@@ -29,11 +29,12 @@ export async function loadPlaceDetailPage(id) {
 
   content.innerHTML = `
     <div class="detail-page">
-
-      <!-- 🔙 Back Button -->
-      <button class="detail-back-btn" id="detailBackBtn">
-        <img src="assets/icons/back.svg" />
-      </button>
+      <div class="detail-section">
+        <!-- 🔙 Back Button -->
+        <button class="back-btn" id="detailBackBtn">
+          <img src="assets/icons/back.svg" />
+        </button>
+      </div>
 
       <!-- 상단 이미지 -->
       <div class="detail-image-container">
@@ -51,40 +52,34 @@ export async function loadPlaceDetailPage(id) {
         </div>
 
         <div class="detail-rating">
-        <p class="d_rating"><img src="assets/icons/star.svg" /> ${
-          data.rating ?? 0
-        }</p>
+        <p class="d_rating"><img src="assets/icons/star.svg" /> ${data.rating ?? 0
+    }</p>
         <p class="d_reviews">(${data.review?.toLocaleString() ?? 0} Reviews)</p>
 
             <!-- 운영시간 -->
             <div class="detail-row">
-                <p class="detail_time"><img src="assets/icons/time.svg" />${
-                  data.time_start ?? "운영 시간 정보 없음"
-                } ~ ${data.time_end ?? "운영 시간 정보 없음"}</p>
+                <p class="detail_time"><img src="assets/icons/time.svg" />${data.time_start ?? "운영 시간 정보 없음"
+    } ~ ${data.time_end ?? "운영 시간 정보 없음"}</p>
             <!-- 전화번호 -->
-                <p class="detail_phone"><img src="assets/icons/phone.svg" /> ${
-                  data.phone ?? "전화번호 없음"
-                }</p>
+                <p class="detail_phone"><img src="assets/icons/phone.svg" /> ${data.phone ?? "전화번호 없음"
+    }</p>
             </div>
         </div>
 
         <div class="homepage">
-            <a href="${
-              "https://www.sungsimdang.co.kr/" ?? "#"
-            }" target="_blank" class="homepage-icon">
+            <a href="${"https://www.sungsimdang.co.kr/" ?? "#"
+    }" target="_blank" class="homepage-icon">
                 <img src="assets/icons/home.svg" />
             </a>
-            <a href="${
-              "https://www.instagram.com/sungsimdang_official/" ?? "#"
-            }" target="_blank" class="homepage-icon">
+            <a href="${"https://www.instagram.com/sungsimdang_official/" ?? "#"
+    }" target="_blank" class="homepage-icon">
                 <img src="assets/icons/instagram.svg" />
             </a>
         </div>
 
         <!-- 설명 -->
-        <p class="detail-description">${
-          data.description ?? "설명 정보 없음"
-        }</p>
+        <p class="detail-description">${data.description ?? "설명 정보 없음"
+    }</p>
 
         <div class="detail-facilities">
             <h1>Facilities</h1>

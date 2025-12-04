@@ -57,6 +57,36 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadCategories();
   await loadTags("tagFilter");
 
+  // 🔥 카테고리 클릭 이벤트 연결
+  document.querySelectorAll(".category-item").forEach(item => {
+    item.addEventListener("click", () => {
+      const type = item.dataset.type;
+      console.log("카테고리 선택됨:", type);
+
+      setCurrentScreen("seeall");
+      hideHeader();
+
+      import("./screens/festival.js").then(module => {
+        module.loadFestivalList();
+      });
+    });
+  });
+
+  // 🔥 태그 클릭 이벤트 연결
+  document.querySelectorAll("#tagFilter .tag").forEach(tag => {
+    tag.addEventListener("click", () => {
+      const tagName = tag.textContent.trim();
+      console.log("태그 선택됨:", tagName);
+
+      setCurrentScreen("seeall");
+      hideHeader();
+
+      import("./screens/see_all.js").then(module => {
+        module.loadSeeAllPage("tag", tagName);
+      });
+    });
+  });
+
   // 🔹 기본 화면 = 홈
   await requestUserLocation();
   showHome();

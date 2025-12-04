@@ -32,9 +32,11 @@ export async function loadFestivalDetail(id) {
       <section class="festival-detail">
         <div class="festival-title">${f.name}</div>
             <div class="host">주최) ${f.host}</div>
+            <div class="festival-img-wrapper">
             <a href="${"https://djzerofe.com/" ?? '#'}" target="_blank" class="main-img">
                 <img class="main-img" src="${f.image_url}">
             </a>
+            </div>
         <div class="festival-detail-info">
             <p class="date"><img src="assets/festival/festival_icons/calender.svg" />${f.date}</p>
             <p class="address"><img src="assets/festival/festival_icons/location.svg" />${f.address}</p>

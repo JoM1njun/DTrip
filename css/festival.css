@@ -73,12 +73,23 @@
 /* ================================
    🌟 축제 목록 화면
 ================================ */
-.festival-list {
+/* .festival-list {
     padding: 15px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 20px;
+} */
+
+.festival-list {
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    /* 모든 기기에서 정확히 2열 */
+    gap: 15px;
+    /* 카드 간 간격 */
+    box-sizing: border-box;
+    justify-items: center;
 }
 
 /* 축제 카드 */
@@ -199,14 +210,27 @@
     margin: 3px 15px;
 }
 
+.festival-img-wrapper {
+    padding: 0 15px;
+    /* 좌우 여백 15px */
+    box-sizing: border-box;
+    /* padding 포함 계산 */
+}
+
 /* 메인 이미지 */
 .festival-detail .main-img {
-    width: 360px;
+    /* width: 360px;
     height: 480px;
     object-fit: cover;
     border-radius: 0px;
     margin: 5px auto;
-    box-shadow: 0 0px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0px 2px rgba(0, 0, 0, 0.1); */
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    /* 원하는 비율 */
+    object-fit: cover;
+    display: block;
+    border-radius: 0px;
 }
 
 /* 상세 정보 */

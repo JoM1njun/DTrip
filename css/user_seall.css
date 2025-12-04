@@ -1,49 +1,149 @@
+.user-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* ← 버튼과 프로필을 같은 높이로 맞춤 */
+  width: 100%;
+}
+
+/* 전체 유저 리스트 영역 */
 .user-seeall-list {
+  width: 100%;
+  /* 화면 전체 사용 */
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
   padding: 15px;
+  box-sizing: border-box;
+  align-items: center;
+  /* padding 포함한 전체 너비 유지 */
 }
 
+/* 개별 유저 카드 */
 .user-seeall-card {
-  display: flex;
-  gap: 15px;
-  padding: 15px;
+  width: 100%;
+  padding: 16px;
   border-radius: 15px;
   background: #fff;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
 }
 
+/* 상단 프로필 + 이름 영역 */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 프로필 이미지 */
 .user-profile {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
   object-fit: cover;
 }
 
-.user-info h3 {
+.user-name {
+  font-size: 15px;
+  font-weight: 700;
   margin: 0;
-  font-size: 16px;
-  font-weight: bold;
 }
 
-.user-title {
-  font-size: 13px;
-  color: #777;
-}
-
-.user-desc {
+/* 길 안내 버튼 — 우측 상단 */
+.route-btn {
+  display: flex;
+  width: 80px;
+  height: 30px;
+  top: 16px;
+  right: 16px;
+  background: #0066ff;
+  color: white;
+  border: none;
+  padding: 6px 14px;
   font-size: 12px;
-  margin: 5px 0;
+  border-radius: 8px;
+  text-align: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
-.user-stats {
+/* 장소 이미지들 — 가로 스크롤 */
+.place-images {
   display: flex;
   gap: 10px;
-  margin-top: 5px;
+  overflow-x: auto;
+  padding-right: 4px;
+  box-sizing: border-box;
+}
+
+.place-images img {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* 코스 정보 (타이틀 + 설명 + 통계) */
+.user-seeall-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-seeall-info p {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.user-seeall-info span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.user-seeall-info img {
+  width: 14px;
+  height: 14px;
+}
+
+/* 코스 제목 */
+.user-seeall-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  color: #222;
+}
+
+/* 코스 설명 */
+.user-desc {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* 좋아요/평점 */
+.user-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
 }
 
 .user-stats img {
   width: 14px;
   height: 14px;
+  margin-right: 3px;
+}
+
+.user-stats span {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #444;
 }

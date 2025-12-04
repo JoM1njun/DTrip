@@ -1,6 +1,7 @@
 import { db } from "../database/firebase.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 import { loadFestivalDetail } from "./festival_detail.js";
+import { showHome } from "../app.js";
 
 export async function loadFestivalList() {
     const content = document.getElementById("content");
@@ -38,11 +39,9 @@ export async function loadFestivalList() {
 
     // 뒤로가기 버튼
     document.getElementById("backHome").addEventListener("click", () => {
-        import("./home.js").then(m => m.loadHomeScreen());
-        document.getElementById("header").style.display = "flex";
-        document.getElementById("categoryContainer").style.display = "block";
-        document.getElementById("tagContainer").style.display = "block";
+        showHome();
         document.getElementById("tabbar").style.display = "flex";
+        import("./home.js").then(m => m.loadHomeScreen());
     });
 
     // Firestore 축제 데이터 가져오기

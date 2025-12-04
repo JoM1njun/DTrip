@@ -34,16 +34,21 @@ async function loadUserList() {
 
   container.innerHTML = list.map(user => `
     <div class="user-seeall-card">
-      <img class="user-profile" src="${user.profile}" />
-      <div class="user-info">
-        <h3>${user.name}</h3>
-        <p class="user-title">${user.title}</p>
-        <p class="user-desc">${user.description}</p>
-
-        <div class="user-stats">
-          <span><img src="assets/icons/heart.svg" /> ${user.favorite}</span>
-          <span><img src="assets/icons/star.svg" /> ${user.rating}</span>
+    <div class="user-header">
+        <div class="profile">
+          <img class="user-profile" src="${user.profile}" />
+          <h3 class="user-name">${user.name}</h3>
         </div>
+        <button class="route-btn">길 안내</button>
+      </div>
+
+      <div class="user-seeall-info">
+        <p class="user-seeall-title">${user.title}</p>
+        <span><img src="assets/icons/heart.svg" /> ${user.favorite}</span>
+      </div>
+
+      <div class="place-images">
+        ${user.images.map(img => `<img src="${img}" />`).join("")}
       </div>
     </div>
   `).join("");

@@ -4,6 +4,13 @@
     font-family: 'Pretendard', sans-serif;
 }
 
+.detail-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+}
+
 .detail-header {
     display: flex;
     flex-direction: row;
@@ -39,7 +46,7 @@
 .detail-image-container {
     width: 95%;
     height: 200px;
-    margin: 25% auto 0;
+    margin: 15% auto 0;
     overflow: hidden;
     position: relative;
     border-radius: 15px;

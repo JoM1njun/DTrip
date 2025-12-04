@@ -131,15 +131,13 @@ async function loadCardsFromDB(type, sortOption = null) {
         <p class="place-name">${data.name}</p>
 
         <div class="review_rating">
-          <p class="rating"><img src="assets/icons/star.svg"/> ${
-            data.rating
+          <p class="rating"><img src="assets/icons/star.svg"/> ${data.rating
           }</p>
           <p class="review">(${data.review?.toLocaleString() ?? 0})</p>
         </div>
 
         <p class="favorite">
-          <img src="assets/icons/heart.svg"/>${
-            data.favorite?.toLocaleString() ?? 0
+          <img src="assets/icons/heart.svg"/>${data.favorite?.toLocaleString() ?? 0
           }명이 좋아함
         </p>
         </div>
