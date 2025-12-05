@@ -75,7 +75,7 @@ async function initMapWithUserLocation() {
 }
 
 // 카카오맵 API 연결
-async function loadKakaoMap() {
+export async function loadKakaoMap() {
   return new Promise((resolve, reject) => {
     if (window.kakao && window.kakao.maps) {
       resolve();

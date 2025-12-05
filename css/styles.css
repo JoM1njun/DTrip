@@ -3,13 +3,20 @@ body {
     margin: 0;
     padding: 0;
     width: 100%;
+    height: auto;
     max-width: 430px;
     margin: 0 auto;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     background: #f8f8f8;
-    overflow-y: scroll;
+    overflow-y: auto;
     scrollbar-width: none;
     /* Firefox 스크롤바 숨기기 */
+}
+
+#content {
+    overflow: visible !important;
+    padding-bottom: 80px;
+    /* tab bar 공간 확보 */
 }
 
 .content-section {

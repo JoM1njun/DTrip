@@ -132,7 +132,7 @@ async function loadUserRecommendPlacesUI() {
       (place) => `
     <div class="user-card">
       <div class="user-card-images">
-        ${place.images
+        ${place.placeImages
           .slice(0, 4)
           .map((img) => `<img src="${img}"/>`)
           .join("")}

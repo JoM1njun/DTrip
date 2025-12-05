@@ -1,5 +1,6 @@
 import { getUserRecommendPlaces } from "../components/userrecommendPlace.js";
 import { showHome } from "../app.js";
+import { loadUserRouteMap } from "./route_map.js";
 
 export function loadUserSeeAll() {
   const content = document.getElementById("content");
@@ -32,14 +33,14 @@ async function loadUserList() {
   const list = await getUserRecommendPlaces();
   const container = document.getElementById("userList");
 
-  container.innerHTML = list.map(user => `
+  container.innerHTML = list.map((user, index) => `
     <div class="user-seeall-card">
     <div class="user-header">
         <div class="profile">
           <img class="user-profile" src="${user.profile}" />
           <h3 class="user-name">${user.name}</h3>
         </div>
-        <button class="route-btn">길 안내</button>
+        <button class="route-btn" data-index="${index}">길 안내</button>
       </div>
 
       <div class="user-seeall-info">
@@ -48,8 +49,21 @@ async function loadUserList() {
       </div>
 
       <div class="place-images">
-        ${user.images.map(img => `<img src="${img}" />`).join("")}
+        ${user.placeImages.map(img => `<img src="${img}" />`).join("")}
       </div>
     </div>
   `).join("");
+
+  // 🟦 이벤트 바인딩
+  document.querySelectorAll(".route-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const idx = e.currentTarget.dataset.index;
+
+      loadUserRouteMap(list[idx]);  // 👉 지도 화면으로 이동
+    });
+  });
+
+  setTimeout(() => {
+    window.scrollTo(0, 0);
+  }, 0);
 }

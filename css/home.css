@@ -24,12 +24,6 @@ body::-webkit-scrollbar {
   justify-content: space-between;
 }
 
-#content {
-  overflow: visible !important;
-  padding-bottom: 80px;
-  /* tab bar 공간 확보 */
-}
-
 .logo {
   font-size: 32px;
   font-weight: bold;
