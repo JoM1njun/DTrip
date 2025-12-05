@@ -6,6 +6,7 @@ import {
 import { loadHomeScreen } from "./home.js";
 import { loadSeeAllPage, currentSeeAllType } from "./see_all.js";
 import { currentScreen, showHome } from "../app.js";
+import { addFavorite, removeFavorite, isFavorite } from "../components/favoriteStore.js";
 
 export async function loadPlaceDetailPage(id) {
   const content = document.getElementById("content");
@@ -141,5 +142,61 @@ export async function loadPlaceDetailPage(id) {
   // 지도 보기 버튼 클릭
   document.getElementById("openMapBtn").addEventListener("click", () => {
     alert("지도 기능은 곧 연결됩니다!");
+  });
+
+  // ================================
+  //   ❤️ 좋아요(위시리스트) 기능
+  // ================================
+  const favoriteBtn = document.getElementById("favoriteBtn");
+  const heartIcon = document.getElementById("heartIcon");
+  const favoriteCountText = document.getElementById("favoriteCount");
+
+  const placeId = id.toString();
+  const baseFavorite = data.favorite ?? 0;
+
+  // 현재 장소가 위시리스트에 있는지 확인
+  let liked = isFavorite(placeId);
+
+  function updateFavoriteUI() {
+    // 텍스트 업데이트 (내 위시리스트 여부만 간단히 표시)
+    if (liked) {
+      favoriteCountText.textContent = `${baseFavorite}명이 좋아함 · 내 위시리스트에 추가됨`;
+      favoriteBtn.classList.add("active");
+    } else {
+      favoriteCountText.textContent = `${baseFavorite}명이 좋아함`;
+      favoriteBtn.classList.remove("active");
+    }
+
+    // 하트 아이콘 상태 (채움/비움)
+    if (liked) {
+      heartIcon.src = "assets/icons/heart.svg";
+    } else {
+      heartIcon.src = "assets/icons/deart.svg";
+    }
+  }
+
+  updateFavoriteUI();
+
+  favoriteBtn.addEventListener("click", () => {
+    liked = !liked;
+
+    if (liked) {
+      // 위시리스트에 추가
+      addFavorite({
+        id: placeId,
+        name: data.name,
+        image_url: data.image_url,
+        address: data.address ?? "",
+        rating: data.rating ?? 0,
+        lat: data.lat ?? null,
+        lng: data.lng ?? null,
+        review: data.review ?? 0,
+      });
+    } else {
+      // 위시리스트에서 제거
+      removeFavorite(placeId);
+    }
+
+    updateFavoriteUI();
   });
 }

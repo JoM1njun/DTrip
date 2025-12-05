@@ -41,5 +41,7 @@ export async function getUserRecommendPlaces() {
     });
   }
 
+  userList.sort((a, b) => b.favorite - a.favorite);
+
   return userList;
 }

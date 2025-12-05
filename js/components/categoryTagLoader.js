@@ -29,10 +29,21 @@ export async function loadTags(target = "tagFilter") {
   }
 
   const snapshot = await getDocs(collection(db, "TagFilter"));
-  let html = "";
+  const tagList = [];
 
-  snapshot.forEach(doc => {
-    const t = doc.data();
+  snapshot.forEach(docSnap => {
+    const t = docSnap.data();
+    tagList.push({
+      id: t.id,         // id 값
+      type: t.type,
+      image_url: t.image_url
+    });
+  });
+
+  tagList.sort((a, b) => a.id - b.id);
+
+  let html = "";
+  tagList.forEach(t => {
     html += `
       <span class="tag">
         <img src="${t.image_url}" /> ${t.type}
