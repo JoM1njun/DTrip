@@ -1,101 +1,140 @@
-import { hideHeader, currentUser } from "../app.js";
-import { auth } from "../database/firebase.js";
-import { signOut } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+/**
+ * menu.js
+ * 
+ * 메뉴 / 마이페이지 화면입니다.
+ * 사용자 프로필, 포인트, 패스권 및 고객 지원 옵션을 표시합니다.
+ * 
+ * 연결된 파일:
+ * - js/app.js
+ */
+// js/screens/menu.js
+// 마이페이지 / 메뉴 화면
 
-// 🔥 메뉴 화면 로드
 export function loadMenuScreen() {
   const content = document.getElementById("content");
 
   content.innerHTML = `
-    <section id="menuPage" class="menu-section">
-      <h3 class="mypage"> 마이페이지 </h3>
-      <!-- 프로필 영역 -->
-      <div id="menuProfile" class="menu-profile">
-          <img id="menuProfileImg" class="profile-img" src="assets/icons/default_profile.svg">
-          <div class="profile-info">
-            <p id="menuProfileName">로그인해주세요</p>
-            <button id="profileActionBtn" class="profile-btn">로그인</button>
+    <div class="menu-page">
+      <!-- 상단 제목 -->
+      <header class="menu-header">
+        <h1 class="menu-header-title">마이페이지</h1>
+      </header>
+
+      <!-- 검색 바 -->
+      <section class="menu-search">
+        <div class="menu-search-box">
+          <input
+            type="text"
+            class="menu-search-input"
+            placeholder="Search"
+          />
+          <span class="menu-search-icon">
+            <img src="assets/icons/search.svg" alt="search" />
+          </span>
+        </div>
+      </section>
+
+      <!-- 내 계정 -->
+      <section class="menu-section">
+        <div class="menu-profile-row">
+          <div class="menu-profile-avatar">
+            <img src="assets/profile/default_profile.png" alt="프로필" onerror="this.style.display='none'" />
           </div>
-      </div>
+          <div class="menu-profile-info">
+            <p class="menu-profile-name">내 계정</p>
+            <p class="menu-profile-email">로그인이 필요합니다</p>
+          </div>
+          <div class="menu-profile-arrow">›</div>
+        </div>
+      </section>
 
-      <!-- 메뉴 리스트 -->
-      <div class="menu-list">
-
-          <div class="menu-item" id="menuAccount">
-            <img src="assets/icons/account.svg"/>
-            <span>계정 설정</span>
+      <!-- 포인트 사용 -->
+      <section class="menu-section">
+        <div class="menu-section-header">포인트 사용</div>
+        <div class="menu-list">
+          <div class="menu-item">
+            <div class="menu-item-icon">
+              <img src="assets/menu/store.svg" alt="포인트 상점" onerror="this.style.display='none'" />
+            </div>
+            <div class="menu-item-text">
+              <span class="menu-item-title">포인트 상점</span>
+            </div>
+            <div class="menu-item-arrow">›</div>
           </div>
 
           <div class="menu-item">
-            <img src="assets/icons/notice.svg"/>
-            <span>공지사항</span>
+            <div class="menu-item-icon">
+              <img src="assets/menu/shop.svg" alt="제휴매장 확인" onerror="this.style.display='none'" />
+            </div>
+            <div class="menu-item-text">
+              <span class="menu-item-title">제휴매장 확인</span>
+            </div>
+            <div class="menu-item-arrow">›</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 패스권 -->
+      <section class="menu-section">
+        <div class="menu-section-header">패스권</div>
+        <div class="menu-list">
+          <div class="menu-item">
+            <div class="menu-item-icon">
+              <img src="assets/menu/ticket.svg" alt="패스권 구매" onerror="this.style.display='none'" />
+            </div>
+            <div class="menu-item-text">
+              <span class="menu-item-title">패스권 구매</span>
+            </div>
+            <div class="menu-item-arrow">›</div>
           </div>
 
           <div class="menu-item">
-            <img src="assets/icons/policy.svg"/>
-            <span>약관 및 정책</span>
+            <div class="menu-item-icon">
+              <img src="assets/menu/ticket_check.svg" alt="나의 패스권 보기" onerror="this.style.display='none'" />
+            </div>
+            <div class="menu-item-text">
+              <span class="menu-item-title">나의 패스권 보기</span>
+            </div>
+            <div class="menu-item-arrow">›</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 고객 지원 -->
+      <section class="menu-section">
+        <div class="menu-section-header">고객 지원</div>
+        <div class="menu-list">
+          <div class="menu-item">
+            <div class="menu-item-icon">
+              <img src="assets/menu/chat.svg" alt="문의사항" onerror="this.style.display='none'" />
+            </div>
+            <div class="menu-item-text">
+              <span class="menu-item-title">문의사항</span>
+            </div>
+            <div class="menu-item-arrow">›</div>
           </div>
 
-          <div class="menu-item logout-item" id="logoutBtn">
-            <img src="assets/icons/logout.svg"/>
-            <span>로그아웃</span>
+          <div class="menu-item">
+            <div class="menu-item-icon">
+              <img src="assets/menu/notice.svg" alt="공지사항" onerror="this.style.display='none'" />
+            </div>
+            <div class="menu-item-text">
+              <span class="menu-item-title">공지사항</span>
+            </div>
+            <div class="menu-item-arrow">›</div>
           </div>
 
-      </div>
-    </section>
+          <div class="menu-item">
+            <div class="menu-item-icon">
+              <img src="assets/menu/info.svg" alt="약관 및 정책" onerror="this.style.display='none'" />
+            </div>
+            <div class="menu-item-text">
+              <span class="menu-item-title">약관 및 정책</span>
+            </div>
+            <div class="menu-item-arrow">›</div>
+          </div>
+        </div>
+      </section>
+    </div>
   `;
-
-  // 로그인 상태 기반으로 UI 변경
-  updateMenuProfile(currentUser);
-
-  // 로그아웃 이벤트 바인딩
-  setupMenuEvents();
-}
-
-// 🔥 로그인 상태에 따른 프로필 전환
-export function updateMenuProfile(user) {
-  const profileImg = document.getElementById("menuProfileImg");
-  const profileName = document.getElementById("menuProfileName");
-  const profileBtn = document.getElementById("profileActionBtn");
-
-  if (!profileImg) return; // 메뉴가 아직 로드 전인 경우
-
-  if (!user) {
-    profileImg.src = "assets/icons/default_profile.svg";
-    profileName.innerText = "로그인해주세요";
-    profileBtn.innerText = "로그인";
-    profileBtn.onclick = () => (location.href = "login.html");
-    return;
-  }
-
-  profileImg.src = user.photoURL ?? "assets/icons/default_profile.svg";
-  profileName.innerText = user.displayName ?? user.email;
-  profileBtn.innerText = "프로필 설정";
-  profileBtn.onclick = () => (location.href = "profile.html");
-}
-
-// 🔥 메뉴 항목 클릭설정
-function setupMenuEvents() {
-  const logoutBtn = document.getElementById("logoutBtn");
-
-  logoutBtn.addEventListener("click", () => {
-    if (!currentUser) {
-      alert("로그인 후 사용할 수 있습니다.");
-      return;
-    }
-
-    signOut(auth).then(() => {
-      alert("로그아웃 되었습니다.");
-      location.reload();
-    });
-  });
-
-  document.getElementById("menuAccount").addEventListener("click", () => {
-    if (!currentUser) {
-      alert("로그인 후 이용 가능합니다.");
-      location.href = "login.html";
-      return;
-    }
-    location.href = "account.html";
-  });
 }

@@ -136,6 +136,7 @@ export async function loadPlaceDetailPage(id) {
     } else {
       showHome();
       loadHomeScreen();
+      document.getElementById("tabbar").style.display = "flex";
     }
   });
 

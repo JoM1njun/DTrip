@@ -134,7 +134,7 @@ function renderDemoCourseCard() {
         <h3 class="course-title">빵지순례</h3>
         <div class="course-meta">
           <span class="course-likes">
-            <img src="assets/icons/heart_filled.svg" />
+            <img src="assets/icons/heart.svg" />
             24명이 좋아함
           </span>
         </div>
