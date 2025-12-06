@@ -87,6 +87,8 @@ async function initRouteMap(places) {
         const start = places[i];
         const end = places[i + 1];
 
+        await new Promise(res => setTimeout(res, 300));
+
         const data = await getTransitRoute(
             { lat: start.lat, lng: start.lng },
             { lat: end.lat, lng: end.lng }
