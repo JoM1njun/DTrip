@@ -18,6 +18,13 @@ export async function loadCategories() {
   });
 
   wrapper.innerHTML = html;
+
+  // document.querySelectorAll(".category-item").forEach(item => {
+  //   item.addEventListener("click", () => {
+  //     const type = item.dataset.type;
+  //     filterPlacesByCategory(type);
+  //   });
+  // });
 }
 
 export async function loadTags(target = "tagFilter") {
@@ -45,11 +52,20 @@ export async function loadTags(target = "tagFilter") {
   let html = "";
   tagList.forEach(t => {
     html += `
-      <span class="tag">
-        <img src="${t.image_url}" /> ${t.type}
+      <span class="tag" data-tag="${t.type}">
+      <img src="${t.image_url}" /> ${t.type}
       </span>
     `;
   });
 
   tagFilter.innerHTML = html;
+
+  document.querySelectorAll(`#${target} .tag`).forEach(tag => {
+    tag.addEventListener("click", () => {
+
+      // const tagType = tag.dataset.tag;
+      // filterPlacesByTag(tagType);
+    });
+  });
 }
+

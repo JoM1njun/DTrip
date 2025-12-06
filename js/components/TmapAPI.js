@@ -1,26 +1,10 @@
-export async function getTransitRoute(start, end) {
-    console.log("📌 Sending coords to server:", start, end);
+export async function getTransitRoute(payload) {
+    console.log("📌 Sending coords to server:", payload);
 
     const response = await fetch("https://dtrip.onrender.com/api/transit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            startX: start.lng,
-            startY: start.lat,
-            endX: end.lng,
-            endY: end.lat,
-            startName: start.name ?? "출발지",
-            endName: end.name ?? "도착지"
-        })
-    });
-
-    console.log("📌 Sending coords(Transit):", {
-        startX: start.lng,
-        startY: start.lat,
-        endX: end.lng,
-        endY: end.lat,
-        startName: start.name ?? "출발지",
-        endName: end.name ?? "도착지"
+        body: JSON.stringify(payload)
     });
 
     if (!response.ok) {

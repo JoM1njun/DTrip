@@ -52,6 +52,8 @@
   border: 1px solid #dddddd;
   font-size: 14px;
   background-color: #fafafa;
+  box-sizing: border-box;
+  /* 패딩 포함 너비 계산 */
 }
 
 .menu-search-input::placeholder {

@@ -72,3 +72,4 @@ export function parseTransitItinerary(data) {
         legs
     };
 }
+

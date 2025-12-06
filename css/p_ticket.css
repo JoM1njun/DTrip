@@ -1,0 +1,338 @@
+/**
+ * p_ticket.css
+ * 
+ * [패스권 구매 화면 스타일]
+ * 패스권 구매 페이지의 레이아웃, 버튼 디자인, 광고 배너 애니메이션 등을 정의합니다.
+ * 
+ * 🔗 연결된 파일 (이 파일이 적용되는 곳):
+ * 1. js/screens/p_ticket.js : 이 CSS가 적용되는 HTML을 생성하는 Javascript 파일
+ * 2. main.html              : 이 CSS 파일을 <link> 태그로 불러오는 메인 파일
+ */
+
+/* ================================
+   🎫 패스권 구매 페이지 기본
+================================ */
+.p-ticket-page {
+    min-height: 100vh;
+    background-color: #fff;
+    padding-bottom: 40px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* 모든 요소에 box-sizing 적용하여 패딩으로 인한 너비 넘침 방지 */
+.p-ticket-page * {
+    box-sizing: border-box;
+}
+
+.p-ticket-hidden {
+    display: none !important;
+}
+
+/* 상단 헤더 */
+.p-ticket-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 20px 20px 20px;
+    position: relative;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.p-ticket-back-btn {
+    position: absolute;
+    left: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+}
+
+.p-ticket-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    color: #000;
+}
+
+/* ================================
+   📅 일정 - 인원 선택 섹션
+================================ */
+.p-ticket-section {
+    padding: 20px;
+    /* 전체 너비 맞춤 */
+}
+
+.p-ticket-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+/* 1. 날짜 선택 박스 */
+.p-ticket-date-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    /* 너비 통일 */
+    height: 50px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 0 16px;
+    margin-bottom: 12px;
+    /* 간격 조정 */
+    background: #fff;
+    overflow: hidden;
+}
+
+/* 실제 input은 투명하게 위를 덮음 */
+.p-ticket-real-date-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* 보여지는 날짜 텍스트 */
+.p-ticket-date-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 15px;
+    color: #000;
+}
+
+.p-ticket-date-value {
+    color: #333;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.p-ticket-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* 2. 인원 선택 컨테이너 */
+.p-ticket-counter-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* 박스 사이 간격 */
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+/* 개별 카운터 Row (날짜 박스와 동일한 너비와 스타일) */
+.p-ticket-counter-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    /* 너비 통일 */
+    height: 50px;
+    /* 고정 높이 */
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 0 16px;
+    background: #fff;
+}
+
+.p-ticket-counter-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: #000;
+}
+
+.p-ticket-counter-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+}
+
+/* ================================
+   🎫 패스권 조회 결과 (리스트)
+================================ */
+/* 조회 버튼 래퍼 (오른쪽 정렬) */
+.p-ticket-search-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.p-ticket-search-btn {
+    width: auto;
+    padding: 8px 20px;
+    background-color: #fff;
+    border: 1px solid #777;
+    border-radius: 50px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* ================================
+   🎫 패스권 조회 결과 (리스트)
+================================ */
+.p-ticket-result-section {
+    padding: 0 20px;
+    border-top: 4px solid #eee;
+    border-bottom: 4px solid #eee;
+    padding-top: 20px;
+    padding-bottom: 30px;
+    /* 하단 간격 추가 */
+    width: 100%;
+}
+
+/* 티켓 카드 (3등분 느낌) */
+.p-ticket-card {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 120px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    background: #fff;
+    margin-bottom: 12px;
+    /* 간격 축소 */
+    width: 100%;
+}
+
+.p-ticket-card-left {
+    background-color: #B9C0FF;
+    width: 70px;
+    /* 너비 조정 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 14px;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.p-ticket-card-label {
+    font-size: 12px;
+    /* 글씨 크기 조정 */
+    font-weight: 700;
+    color: #000;
+}
+
+.p-ticket-card-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 16px;
+    gap: 12px;
+    position: relative;
+}
+
+.p-ticket-card-value {
+    font-size: 14px;
+    color: #6C7EFF;
+    font-weight: 600;
+}
+
+/* 예매 버튼 래퍼 */
+.p-ticket-buy-btn-wrapper {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.p-ticket-buy-btn {
+    background: #fff;
+    border: 1px solid #6C7EFF;
+    border-radius: 20px;
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #000;
+    cursor: pointer;
+}
+
+.p-ticket-buy-btn img {
+    width: 14px;
+    height: 14px;
+}
+
+.p-ticket-price {
+    font-size: 12px;
+    color: #333;
+}
+
+
+/* ================================
+   � 광고 배너 (3등분 스타일)
+================================ */
+/* 조회 전: 큰 광고 (Big Mode) */
+.p-ticket-ad-big {
+    margin: 20px 20px;
+    height: 550px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    /* 예쁜 그라데이션 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: #333;
+    animation: fadeIn 0.5s;
+    transition: height 0.5s ease;
+}
+
+/* 줄어든 상태 */
+.p-ticket-ad-big.shrunk {
+    height: 400px;
+    margin-top: 10px;
+    /* 결과 섹션과의 간격 */
+}
+
+.p-ticket-ad-big h2 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+}
+
+.p-ticket-ad-big p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

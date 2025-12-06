@@ -108,6 +108,13 @@ body::-webkit-scrollbar {
   background: #eee;
 }
 
+.category-item.selected p {
+  color: #b299ff;
+  /* 원하는 색 */
+  border-radius: 12px;
+  transition: 0.2s;
+}
+
 .tag-filter {
   position: sticky;
   top: 0;
@@ -137,6 +144,14 @@ body::-webkit-scrollbar {
   font-weight: bold;
   box-shadow: 0 0px 2px rgba(0, 0, 0, 0.3);
   white-space: nowrap;
+}
+
+/* 태그 선택됨 */
+.tag.selected {
+  background: #b299ff;
+  /* 원하는 색 */
+
+  transition: 0.2s;
 }
 
 .list-section {

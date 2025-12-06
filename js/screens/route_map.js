@@ -27,7 +27,10 @@ export async function loadUserRouteMap(user) {
             </button>
         </div>
             <div id="map"></div>
-            <div id="transitPanel"></div>
+            <div id="bottomSheet">
+                <div id="sheetHandle"></div>
+                <div id="transitPanel"></div>
+            </div>
         </section>`;
 
     document.getElementById("routeBackBtn").onclick = () => {

@@ -41,11 +41,42 @@
     height: 65vh;
 }
 
+#bottomSheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 25vh;
+    /* 기본 높이 */
+    max-height: 85vh;
+    /* 최대로 올릴 수 있는 높이 */
+
+    background: #fff;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
+
+    z-index: 10;
+    /* 지도 위에 */
+    display: flex;
+    flex-direction: column;
+
+    transition: height 0.25s ease;
+}
+
+/* 슬라이드 손잡이 */
+#sheetHandle {
+    width: 45px;
+    height: 5px;
+    background: #ddd;
+    border-radius: 3px;
+    margin: 10px auto;
+}
+
 /* 전체 패널 */
 #transitPanel {
     padding: 0px 0px 80px 0px;
     background: #f7f7f7;
-    border-radius: 25px;
 }
 
 /* 각 구간 카드 */
