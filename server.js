@@ -84,7 +84,7 @@ app.get("/api/busPositions", async (req, res) => {
 
 // Tmap 대중교통 & Polyline API
 app.post("/api/transit", async (req, res) => {
-  const { startX, startY, endX, endY } = req.query;
+  const { startX, startY, endX, endY } = req.body;
 
   console.log("🔥 Received Body:", req.body);
   console.log("TMAP_KEY:", TMAP_KEY);
