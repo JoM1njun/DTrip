@@ -2,6 +2,7 @@ import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
 
+const TMAP_KEY = qzwwcUgkeE8rEwDUJSnwX4GwJHfFBAUn2BqK8YSs;
 const app = express();
 app.use(cors());
 
@@ -14,7 +15,7 @@ app.get("/api/routes", async (req, res) => {
   const url =
     `https://apis.data.go.kr/1613000/BusRouteInfoInqireService/getRouteInfoIem?serviceKey=${SERVICE_KEY}` +
     `&_type=xml` +
-    `&cityCode=${cityCode}`+
+    `&cityCode=${cityCode}` +
     `&routeId=${routeId}`;
 
   try {
@@ -78,6 +79,34 @@ app.get("/api/busPositions", async (req, res) => {
     console.error("버스 위치 API 오류:", err);
     res.status(500).send("Bus Position API Error");
   }
+});
+
+// Tmap 대중교통 & Polyline API
+app.get("/api/transit", async (req, res) => {
+  const { startX, startY, endX, endY } = req.query;
+
+  const url = "https://apis.openapi.sk.com/transit/routes";
+
+  const body = {
+    startX,
+    startY,
+    endX,
+    endY,
+    reqCoordType: "WGS84GEO",
+    resCoordType: "WGS84GEO"
+  };
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "appKey": TMAP_KEY,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  });
+
+  const data = await response.json();
+  res.json(data);
 });
 
 
