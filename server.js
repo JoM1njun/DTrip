@@ -4,7 +4,7 @@ import cors from "cors";
 
 const TMAP_KEY = process.env.TMAP_KEY;
 const app = express();
-app.use(cors());
+app.use(express.json());
 
 // const SERVICE_KEY = "9152a33db8805474901b834fd11ad3fe3a2e69a432d7468eee1fde7afe57de2d";
 const SERVICE_KEY = encodeURIComponent("36781dec23b439f774a5a628c913a453ef964b60b0e1aacf8b8ff7fdec8cee3f");
@@ -86,6 +86,9 @@ app.post("/api/transit", async (req, res) => {
   const { startX, startY, endX, endY } = req.query;
 
   console.log("TMAP_KEY:", TMAP_KEY);
+  console.log("🔥 Received coords:", {
+    startX, startY, endX, endY
+  });
 
   try {
     const response = await fetch("https://apis.openapi.sk.com/transit/routes", {
