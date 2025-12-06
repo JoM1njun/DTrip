@@ -111,5 +111,5 @@ app.get("/api/transit", async (req, res) => {
 
 
 app.listen(PORT, () => {
-  console.log(`Proxy server running at http://localhost:${PORT}`);
+  console.log(`Proxy server running at https://dtrip.onrender.com`);
 });

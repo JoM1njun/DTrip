@@ -4,6 +4,10 @@ node_modules/
 # Environment variables
 .env
 
+# Upload
+Upload/*
+!Upload/.gitkeep
+
 # Logs
 *.log
 npm-debug.log*
