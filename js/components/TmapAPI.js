@@ -8,15 +8,19 @@ export async function getTransitRoute(start, end) {
             startX: start.lng,
             startY: start.lat,
             endX: end.lng,
-            endY: end.lat
+            endY: end.lat,
+            startName: start.name ?? "출발지",
+            endName: end.name ?? "도착지"
         })
     });
 
-    console.log("📌 Sending coords:", {
+    console.log("📌 Sending coords(Transit):", {
         startX: start.lng,
         startY: start.lat,
         endX: end.lng,
-        endY: end.lat
+        endY: end.lat,
+        startName: start.name ?? "출발지",
+        endName: end.name ?? "도착지"
     });
 
     if (!response.ok) {

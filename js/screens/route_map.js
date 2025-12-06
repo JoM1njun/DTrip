@@ -4,6 +4,7 @@ import { collection, query, where, getDocs } from "https://www.gstatic.com/fireb
 import { getTmapRoute, getTransitRoute } from "../components/TmapAPI.js";
 import { extractPolylines } from "../components/transitParser.js";
 import { drawPolyline, getColorByMode } from "../components/Polyline.js";
+import { renderTransitPanel } from "../components/transitUI.js";
 
 
 export async function loadUserRouteMap(user) {
@@ -26,6 +27,7 @@ export async function loadUserRouteMap(user) {
             </button>
         </div>
             <div id="map"></div>
+            <div id="transitPanel"></div>
         </section>`;
 
     document.getElementById("routeBackBtn").onclick = () => {
@@ -105,5 +107,7 @@ async function initRouteMap(places) {
     const bounds = new kakao.maps.LatLngBounds();
     places.forEach(p => bounds.extend(new kakao.maps.LatLng(p.lat, p.lng)));
     map.setBounds(bounds);
+
+    renderTransitPanel(places);
 }
 
