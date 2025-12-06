@@ -96,9 +96,8 @@ async function initRouteMap(places) {
 
         const lines = extractPolylines(data);
 
-        lines.forEach(line => {
-            const color = getColorByMode(line.mode);
-            drawPolyline(map, line.coords, color);
+        lines.forEach(coords => {
+            drawPolyline(map, coords, "#2979FF");
         });
     }
 

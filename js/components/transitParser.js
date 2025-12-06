@@ -5,6 +5,6 @@ export function extractPolylines(data) {
     }
 
     return data.features
-        .filter(f => f.geometry.type === "LineString")
+        .filter(f => f.geometry?.type === "LineString")
         .map(f => f.geometry.coordinates);
 }
