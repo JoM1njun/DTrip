@@ -15,7 +15,10 @@ export function registerFilterEvents({
             const type = item.dataset.type;
 
             // "축제" 는 별도 처리해야 할 경우 → 여기서 return 가능
-            if (type === "축제") return;
+            if (type === "축제" || type.toLowerCase() === "festival") {
+                import("../screens/festival.js").then(m => m.loadFestivalList());
+                return;
+            }
 
             // 같은 카테고리를 다시 클릭 → 해제
             if (activeCategory === type) {

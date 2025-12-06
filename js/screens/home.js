@@ -92,6 +92,8 @@ export async function loadHomeScreen() {
   await loadCategories();
   await loadTags();
 
+
+
   registerFilterEvents({
     categorySelector: ".category-item",
     tagSelector: ".tag",
