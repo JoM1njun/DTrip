@@ -82,31 +82,33 @@ app.get("/api/busPositions", async (req, res) => {
 });
 
 // Tmap 대중교통 & Polyline API
-app.get("/api/transit", async (req, res) => {
+app.post("/api/transit", async (req, res) => {
   const { startX, startY, endX, endY } = req.query;
 
-  const url = "https://apis.openapi.sk.com/transit/routes";
+  try {
+    const response = await fetch("https://apis.openapi.sk.com/transit/routes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "appKey": TMAP_KEY
+      },
+      body: JSON.stringify({
+        startX: String(startX),
+        startY: String(startY),
+        endX: String(endX),
+        endY: String(endY),
+        reqCoordType: "WGS84GEO",
+        resCoordType: "WGS84GEO"
+      })
+    });
 
-  const body = {
-    startX,
-    startY,
-    endX,
-    endY,
-    reqCoordType: "WGS84GEO",
-    resCoordType: "WGS84GEO"
-  };
+    const data = await response.json();
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "appKey": TMAP_KEY,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
-  });
-
-  const data = await response.json();
-  res.json(data);
+    res.json(data);
+  } catch (err) {
+    console.error("Server Error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 

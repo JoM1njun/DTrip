@@ -1,6 +1,9 @@
 import { loadKakaoMap } from "./map.js"
 import { db } from "../database/firebase.js";
 import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+import { getTransitRoute } from "../components/TmapAPI.js";
+import { extractPolylines } from "../components/transitParser.js";
+import { drawPolyline, getColorByMode } from "../components/Polyline.js";
 
 
 export async function loadUserRouteMap(user) {
@@ -61,7 +64,7 @@ async function fetchPlacesByNames(names) {
     return places;
 }
 
-function initRouteMap(places) {
+async function initRouteMap(places) {
     if (places.length === 0) return;
 
     const first = places[0];
@@ -71,34 +74,35 @@ function initRouteMap(places) {
         level: 5
     });
 
-    let linePath = [];
-
     places.forEach(p => {
-        const position = new kakao.maps.LatLng(p.lat, p.lng);
-
         // 마커 표시
         new kakao.maps.Marker({
             map,
-            position
+            position: new kakao.maps.LatLng(p.lat, p.lng)
         });
-
-        // Polyline 경로에 추가
-        linePath.push(position);
     });
 
     // 선 그리기
-    const polyline = new kakao.maps.Polyline({
-        map,
-        path: linePath,
-        strokeWeight: 5,
-        strokeColor: "#4A90E2",
-        strokeOpacity: 0.9,
-        strokeStyle: "solid"
-    });
+    for (let i = 0; i < places.length - 1; i++) {
+        const start = places[i];
+        const end = places[i + 1];
+
+        const data = await getTransitRoute(
+            { lat: start.lat, lng: start.lng },
+            { lat: end.lat, lng: end.lng }
+        );
+
+        const lines = extractPolylines(data);
+
+        lines.forEach(line => {
+            const color = getColorByMode(line.mode);
+            drawPolyline(map, line.coords, color);
+        });
+    }
 
     // 모든 마커 포함하는 boundary 자동 맞추기
     const bounds = new kakao.maps.LatLngBounds();
-    linePath.forEach(pos => bounds.extend(pos));
+    places.forEach(p => bounds.extend(new kakao.maps.LatLng(p.lat, p.lng)));
     map.setBounds(bounds);
 }
 
