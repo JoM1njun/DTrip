@@ -39,7 +39,7 @@ export async function getTmapRoute(start, end) {
         resCoordType: "WGS84GEO"
     };
 
-    const response = await fetch("/api/route", {
+    const response = await fetch("https://dtrip.onrender.com/api/route", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
