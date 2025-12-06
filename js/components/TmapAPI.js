@@ -35,6 +35,8 @@ export async function getTmapRoute(start, end) {
         startY: String(start.lat),
         endX: String(end.lng),
         endY: String(end.lat),
+        startName: start.name ?? "출발지",
+        endName: end.name ?? "도착지",
         reqCoordType: "WGS84GEO",
         resCoordType: "WGS84GEO"
     };

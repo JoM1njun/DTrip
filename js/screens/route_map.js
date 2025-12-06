@@ -90,8 +90,8 @@ async function initRouteMap(places) {
         await new Promise(res => setTimeout(res, 300));
 
         const data = await getTmapRoute(
-            { lat: start.lat, lng: start.lng },
-            { lat: end.lat, lng: end.lng }
+            { lat: start.lat, lng: start.lng, name: start.name },
+            { lat: end.lat, lng: end.lng, name: end.name }
         );
 
         const lines = extractPolylines(data);

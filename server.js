@@ -135,7 +135,7 @@ app.post("/api/transit", async (req, res) => {
 });
 
 app.post("/api/route", async (req, res) => {
-  const { startX, startY, endX, endY } = req.body;
+  const { startX, startY, endX, endY, startname, endname } = req.body;
   console.log("🔥 /api/route Received Body:", req.body);
 
   if (
@@ -152,6 +152,8 @@ app.post("/api/route", async (req, res) => {
     startY: String(startY),
     endX: String(endX),
     endY: String(endY),
+    startName: startname ?? "출발지",
+    endName: endname ?? "도착지",
     reqCoordType: "WGS84GEO",
     resCoordType: "WGS84GEO"
   };
