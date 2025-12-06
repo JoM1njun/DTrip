@@ -20,7 +20,7 @@ export async function getTransitRoute(start, end) {
     });
 
     if (!response.ok) {
-        console.error("❌ 서버 응답 에러:", res.status, res.statusText);
+        console.error("❌ 서버 응답 에러:", response.status, response.statusText);
         throw new Error("서버 에러");
     }
 
