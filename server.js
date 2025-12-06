@@ -86,6 +86,7 @@ app.get("/api/busPositions", async (req, res) => {
 app.post("/api/transit", async (req, res) => {
   const { startX, startY, endX, endY } = req.query;
 
+  console.log("🔥 Received Body:", req.body);
   console.log("TMAP_KEY:", TMAP_KEY);
   console.log("🔥 Received coords:", {
     startX, startY, endX, endY
