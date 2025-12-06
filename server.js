@@ -134,6 +134,35 @@ app.post("/api/transit", async (req, res) => {
   }
 });
 
+app.post("/api/route", async (req, res) => {
+  const { startX, startY, endX, endY } = req.body;
+
+  const payload = {
+    startX,
+    startY,
+    endX,
+    endY,
+    reqCoordType: "WGS84GEO",
+    resCoordType: "WGS84GEO"
+  };
+
+  const response = await fetch(
+    "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "appKey": process.env.TMAP_KEY
+      },
+      body: JSON.stringify(payload)
+    }
+  );
+
+  const data = await response.json();
+  res.json(data);
+});
+
+
 
 app.listen(PORT, () => {
   console.log(`Proxy server running at https://dtrip.onrender.com:${PORT}`);

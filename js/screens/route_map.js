@@ -1,7 +1,7 @@
 import { loadKakaoMap } from "./map.js"
 import { db } from "../database/firebase.js";
 import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-import { getTransitRoute } from "../components/TmapAPI.js";
+import { getTmapRoute, getTransitRoute } from "../components/TmapAPI.js";
 import { extractPolylines } from "../components/transitParser.js";
 import { drawPolyline, getColorByMode } from "../components/Polyline.js";
 
@@ -89,7 +89,7 @@ async function initRouteMap(places) {
 
         await new Promise(res => setTimeout(res, 300));
 
-        const data = await getTransitRoute(
+        const data = await getTmapRoute(
             { lat: start.lat, lng: start.lng },
             { lat: end.lat, lng: end.lng }
         );
