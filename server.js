@@ -4,6 +4,7 @@ import cors from "cors";
 
 const TMAP_KEY = process.env.TMAP_KEY;
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // const SERVICE_KEY = "9152a33db8805474901b834fd11ad3fe3a2e69a432d7468eee1fde7afe57de2d";
