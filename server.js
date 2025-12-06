@@ -127,7 +127,7 @@ app.post("/api/transit", async (req, res) => {
 
     const data = await response.json();
 
-    res.status(tmapRes.status).json(data);
+    res.status(response.status).json(data);
   } catch (err) {
     console.error("Server Error:", err);
     res.status(500).json({ error: "Internal Server Error" });
