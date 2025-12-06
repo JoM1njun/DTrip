@@ -2,7 +2,7 @@ import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
 
-const TMAP_KEY = qzwwcUgkeE8rEwDUJSnwX4GwJHfFBAUn2BqK8YSs;
+const TMAP_KEY = process.env.TMAP_KEY;
 const app = express();
 app.use(cors());
 
