@@ -136,30 +136,49 @@ app.post("/api/transit", async (req, res) => {
 
 app.post("/api/route", async (req, res) => {
   const { startX, startY, endX, endY } = req.body;
+  console.log("🔥 /api/route Received Body:", req.body);
+
+  if (
+    startX === undefined ||
+    startY === undefined ||
+    endX === undefined ||
+    endY === undefined
+  ) {
+    return res.status(400).json({ error: "좌표가 누락되었습니다." });
+  }
 
   const payload = {
-    startX,
-    startY,
-    endX,
-    endY,
+    startX: String(startX),
+    startY: String(startY),
+    endX: String(endX),
+    endY: String(endY),
     reqCoordType: "WGS84GEO",
     resCoordType: "WGS84GEO"
   };
 
-  const response = await fetch(
-    "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "appKey": process.env.TMAP_KEY
-      },
-      body: JSON.stringify(payload)
-    }
-  );
+  console.log("🚀 Sending to Tmap routes/pedestrian:", payload);
 
-  const data = await response.json();
-  res.json(data);
+  try {
+    const response = await fetch(
+      "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+          "appKey": TMAP_KEY,            // 🔥 여기 꼭 확인
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const data = await response.json();
+    console.log("📩 Tmap(route) response:", data);
+
+    return res.status(response.status).json(data);
+  } catch (err) {
+    console.error("Server Error (/api/route):", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 
