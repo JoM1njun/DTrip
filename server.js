@@ -85,6 +85,8 @@ app.get("/api/busPositions", async (req, res) => {
 app.post("/api/transit", async (req, res) => {
   const { startX, startY, endX, endY } = req.query;
 
+  console.log("TMAP_KEY:", TMAP_KEY);
+
   try {
     const response = await fetch("https://apis.openapi.sk.com/transit/routes", {
       method: "POST",
