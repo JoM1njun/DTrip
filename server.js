@@ -160,7 +160,7 @@ app.post("/api/route", async (req, res) => {
 
   try {
     const response = await fetch(
-      "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json",
+      "https://apis.openapi.sk.com/tmap/routes/pedestrian",
       {
         method: "POST",
         headers: {
