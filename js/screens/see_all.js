@@ -155,7 +155,7 @@ function renderSeeAllCards(list) {
         </div>
 
         <p class="favorite">
-          <img src="assets/icons/heart.svg"/>${data.favorite?.toLocaleString() ?? 0}명이 좋아함
+          <img src="assets/icons/redheart.svg"/>${data.favorite?.toLocaleString() ?? 0}명이 좋아함
         </p>
       </div>
     </div>

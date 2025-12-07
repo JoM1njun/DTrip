@@ -103,13 +103,29 @@ export async function loadHomeScreen() {
       let filteredRecommend = [...originalRecommend];
 
       if (category) {
-        filteredPopular = filteredPopular.filter(p => p.categoryId === category);
-        filteredRecommend = filteredRecommend.filter(p => p.categoryId === category);
+        filteredPopular = filteredPopular.filter(p =>
+          Array.isArray(p.categoryId)
+            ? p.categoryId.includes(category)
+            : p.categoryId === category
+        );
+        filteredRecommend = filteredRecommend.filter(p =>
+          Array.isArray(p.categoryId)
+            ? p.categoryId.includes(category)
+            : p.categoryId === category
+        );
       }
 
       if (tag) {
-        filteredPopular = filteredPopular.filter(p => p.tag === tag);
-        filteredRecommend = filteredRecommend.filter(p => p.tag === tag);
+        filteredPopular = filteredPopular.filter(p =>
+          Array.isArray(p.tag)
+            ? p.tag.includes(tag)
+            : p.tag === tag
+        );
+        filteredRecommend = filteredRecommend.filter(p =>
+          Array.isArray(p.tag)
+            ? p.tag.includes(tag)
+            : p.tag === tag
+        );
       }
 
       renderPopular(filteredPopular);
@@ -200,21 +216,31 @@ function applyCombinedFilter() {
   let filteredRecommend = originalRecommend;
 
   if (activeCategory) {
-    filteredPopular = filteredPopular.filter(p => p.categoryId === activeCategory);
-    filteredRecommend = filteredRecommend.filter(p => p.categoryId === activeCategory);
+    filteredPopular = filteredPopular.filter(p =>
+      Array.isArray(p.categoryId)
+        ? p.categoryId.includes(activeCategory)
+        : p.categoryId === activeCategory
+    );
+    filteredRecommend = filteredRecommend.filter(p =>
+      Array.isArray(p.categoryId)
+        ? p.categoryId.includes(activeCategory)
+        : p.categoryId === activeCategory
+    );
   }
 
   if (activeTag) {
-    filteredPopular = filteredPopular.filter(p => p.tag === activeTag);
-    filteredRecommend = filteredRecommend.filter(p => p.tag === activeTag);
+    filteredPopular = filteredPopular.filter(p =>
+      Array.isArray(p.tag)
+        ? p.tag.includes(activeTag)
+        : p.tag === activeTag
+    );
+    filteredRecommend = filteredRecommend.filter(p =>
+      Array.isArray(p.tag)
+        ? p.tag.includes(activeTag)
+        : p.tag === activeTag
+    );
   }
 
-  console.log("필터 결과:", {
-    popular: filteredPopular.length,
-    recommend: filteredRecommend.length
-  });
-
-  // 렌더링
   renderPopular(filteredPopular);
   renderRecommend(filteredRecommend);
 }
