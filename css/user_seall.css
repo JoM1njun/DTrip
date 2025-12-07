@@ -102,6 +102,9 @@
 }
 
 .user-seeall-info span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 14px;
   font-weight: 500;
 }
@@ -146,4 +149,16 @@
   align-items: center;
   font-size: 13px;
   color: #444;
+}
+
+.user-comment {
+  height: 70px;
+  border-radius: 15px;
+  box-shadow: 0 0px 2px rgba(0, 0, 0, 0.2);
+}
+
+.user-comment p {
+  margin: 10px;
+  font-size: 15px;
+  font-weight: 600;
 }

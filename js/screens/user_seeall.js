@@ -45,11 +45,15 @@ async function loadUserList() {
 
       <div class="user-seeall-info">
         <p class="user-seeall-title">${user.title}</p>
-        <span><img src="assets/icons/heart.svg" /> ${user.favorite}</span>
+        <span><img src="assets/icons/redheart.svg" /> ${user.favorite}</span>
       </div>
 
       <div class="place-images">
         ${user.placeImages.map(img => `<img src="${img}" />`).join("")}
+      </div>
+
+      <div class="user-comment">
+      <p>${user.name}님의 리뷰</p>
       </div>
     </div>
   `).join("");

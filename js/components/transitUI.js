@@ -5,8 +5,8 @@ const transitCache = {};
 
 // mode → 아이콘
 function getModeIcon(mode) {
-    if (mode === "WALK") return "assets/route/walk.svg";
-    if (mode === "BUS") return "assets/route/bus.svg";
+    if (mode === "WALK") return `<img src="assets/route/walk.svg" class="mode-icon"/>`;
+    if (mode === "BUS") return `<img src="assets/route/bus.svg" class="mode-icon"/>`;;
     if (mode === "SUBWAY") return "🚇";
     return "➡️";
 }

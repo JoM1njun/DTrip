@@ -188,7 +188,7 @@ function renderUser(list) {
       <div class="user-info">
         <h3 class="user-name">${place.name}</h3>
         <p class="user-title">${place.title}</p>
-        <div class="user-favorite"><img src="assets/icons/heart.svg" /> ${place.favorite}</div>
+        <div class="user-favorite"><img src="assets/icons/redheart.svg" /> ${place.favorite}</div>
       </div>
     </div>`
     )

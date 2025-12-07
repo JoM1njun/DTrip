@@ -42,7 +42,9 @@ export async function loadUserRouteMap(user) {
 
     await loadKakaoMap();
     // DOM 렌더 보장
-    await new Promise(res => requestAnimationFrame(res));
+    await new Promise(res => requestAnimationFrame(() => {
+        requestAnimationFrame(res);
+    }));
 
     // 🔥 User 안의 place 이름 → Places에서 데이터 가져오기
     const placeData = await fetchPlacesByNames(user.images);
@@ -148,12 +150,12 @@ function enableBottomSheetDrag() {
     let sheetY = 0; // 현재 translateY 값
 
     const sheetHeight = window.innerHeight * 0.25; // 25vh
-    const MAX_UP = window.innerHeight * 0.20;   // 위로 20%
-    const MAX_DOWN = window.innerHeight * sheetHeight; // 아래로 60%
+    const MAX_UP = window.innerHeight * 0.75;   // 위로 20%
+    const MAX_DOWN = window.innerHeight - sheetHeight; // 아래로 60%
 
     // 초기 위치 (조금 내려와 있게)
     sheet.style.transition = "transform 0.25s ease";
-    sheet.style.transform = `translateY(${MAX_DOWN - 40}px)`;
+    sheet.style.transform = `translateY(${MAX_DOWN}px)`;
 
     const onTouchStart = (e) => {
         startY = e.touches[0].clientY;
