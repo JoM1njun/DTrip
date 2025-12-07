@@ -11,8 +11,19 @@ export let currentScreen = "home";
 
 export function setCurrentScreen(screen) {
   currentScreen = screen;
-  console.log(currentScreen);
+
+  // 1) 모든 탭 active 제거
+  document.querySelectorAll("#tabbar .tab-item").forEach(tab => {
+    tab.classList.remove("active");
+  });
+
+  // 2) 해당 탭 active 추가
+  const activeTab = document.querySelector(`#tabbar .tab-item[data-page="${screen}"]`);
+  if (activeTab) {
+    activeTab.classList.add("active");
+  }
 }
+
 
 // onAuthStateChanged(auth, (user) => {
 //   if (user) {
@@ -56,36 +67,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   await loadCategories();
   await loadTags("tagFilter");
-
-  // 🔥 카테고리 클릭 이벤트 연결
-  // document.querySelectorAll(".category-item").forEach(item => {
-  //   item.addEventListener("click", () => {
-  //     const type = item.dataset.type;
-  //     console.log("카테고리 선택됨:", type);
-
-  //     setCurrentScreen("seeall");
-  //     hideHeader();
-
-  //     import("./screens/festival.js").then(module => {
-  //       module.loadFestivalList();
-  //     });
-  //   });
-  // });
-
-  // // 🔥 태그 클릭 이벤트 연결
-  // document.querySelectorAll("#tagFilter .tag").forEach(tag => {
-  //   tag.addEventListener("click", () => {
-  //     const tagName = tag.textContent.trim();
-  //     console.log("태그 선택됨:", tagName);
-
-  //     setCurrentScreen("seeall");
-  //     hideHeader();
-
-  //     import("./screens/see_all.js").then(module => {
-  //       module.loadSeeAllPage("tag", tagName);
-  //     });
-  //   });
-  // });
 
   // 🔹 기본 화면 = 홈
   await requestUserLocation();

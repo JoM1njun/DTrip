@@ -13,10 +13,10 @@
 #MaptagContainer {
     position: absolute;
     height: 50px;
-    top: 50px;
+    top: 20px;
     width: 100%;
     z-index: 1000;
-    padding: 0 10px;
+    padding: 0 15px;
     pointer-events: none;
 }
 
@@ -69,4 +69,8 @@
 #maptagFilter .tag img {
     width: 18px;
     height: 18px;
+}
+
+#MapBackBtn {
+    pointer-events: auto !important;
 }

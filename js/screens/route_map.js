@@ -5,6 +5,7 @@ import { getTmapRoute, getTransitRoute } from "../components/TmapAPI.js";
 import { extractPolylines } from "../components/transitParser.js";
 import { drawPolyline, getColorByMode } from "../components/Polyline.js";
 import { renderTransitPanel } from "../components/transitUI.js";
+import { userLocation } from "../app.js";
 
 
 export async function loadUserRouteMap(user) {
@@ -226,3 +227,77 @@ function enableBottomSheetDrag() {
     handle.addEventListener("touchend", onTouchEnd);
 }
 
+// detail.js의 길 안내
+export async function loadRouteMapScreen() {
+    const content = document.getElementById("content");
+
+    content.innerHTML = `
+        <div id="routeMap" style="width:100%; height:100vh;"></div>
+    `;
+
+    // ⭐ detail.js에서 전달된 목적지 정보
+    const target = JSON.parse(sessionStorage.getItem("route_target"));
+    if (!target) {
+        alert("경로 대상 정보가 없습니다.");
+        return;
+    }
+
+    await loadKakaoMap();
+
+    // ⭐ 현재 위치가 준비되어 있는지 체크
+    if (!userLocation || !userLocation.lat || !userLocation.lng) {
+        alert("현재 위치 정보를 불러오지 못했습니다.");
+        return;
+    }
+
+    // 지도 생성
+    const map = new kakao.maps.Map(document.getElementById("routeMap"), {
+        center: new kakao.maps.LatLng(userLocation.lat, userLocation.lng),
+        level: 4
+    });
+
+    // ⭐ Render 서버로 경로 요청
+    const res = await fetch("https://dtrip.onrender.com/api/route", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            startX: userLocation.lng,
+            startY: userLocation.lat,
+            endX: target.lng,
+            endY: target.lat,
+            startname: "현재 위치",
+            endname: target.name
+        })
+    });
+
+    const data = await res.json();
+    console.log("🚀 Tmap 경로 응답:", data);
+
+    if (!data.features) {
+        alert("경로 데이터를 받아오지 못했습니다.");
+        return;
+    }
+
+    // ⭐ Tmap → Kakao 좌표 변환 후 폴리라인 생성
+    const path = [];
+    data.features.forEach((item) => {
+        if (item.geometry.type === "LineString") {
+            item.geometry.coordinates.forEach((coord) => {
+                path.push(new kakao.maps.LatLng(coord[1], coord[0]));
+            });
+        }
+    });
+
+    const polyline = new kakao.maps.Polyline({
+        map: map,
+        path: path,
+        strokeWeight: 5,
+        strokeColor: "#346beb",
+        strokeOpacity: 0.9
+    });
+
+    //⭐ 경로 전체 보이도록 지도 범위 조정
+    const bounds = new kakao.maps.LatLngBounds();
+    path.forEach(p => bounds.extend(p));
+    map.setBounds(bounds);
+}

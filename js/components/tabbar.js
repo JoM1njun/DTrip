@@ -20,6 +20,11 @@ window.addEventListener("DOMContentLoaded", () => {
     tab.addEventListener("click", () => {
       const page = tab.dataset.page;
 
+      if (page === "map") {
+        const currentPage = document.querySelector(".tab-item.active")?.dataset.page;
+        sessionStorage.setItem("map_prev_screen", currentPage);
+      }
+
       switch (page) {
         case "home":
           showHome();

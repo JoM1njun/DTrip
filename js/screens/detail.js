@@ -116,15 +116,19 @@ export async function loadPlaceDetailPage(id) {
             </div>
         </div>
         
-        <!-- 좋아요 / 리뷰 -->
-        <div class="detail-favorite">
-        <p id="favoriteCount">${data.favorite ?? 0}명이 좋아함</p>
-            <button id="favoriteBtn" class="favorite-btn">
-            
+        <div class="favorite-nav">
+          <!-- 좋아요 / 리뷰 -->
+          <div class="detail-favorite">
+            <p id="favoriteCount">${data.favorite ?? 0}명이 좋아함</p>
+              <button id="favoriteBtn" class="favorite-btn">
                 <img id="heartIcon" src="assets/icons/heart.svg" />
-            </button>
+              </button>
+          </div>
+
+          <div class="navigation">
+            <p>길 안내</p>
+          </div>
         </div>
-        
       </div>
     </div>
   `;
@@ -159,7 +163,43 @@ export async function loadPlaceDetailPage(id) {
 
   // 지도 보기 버튼 클릭
   document.getElementById("openMapBtn").addEventListener("click", () => {
-    alert("지도 기능은 곧 연결됩니다!");
+    const placeData = {
+      id: id,
+      name: data.name,
+      lat: data.lat,
+      lng: data.lng
+    };
+
+    // 지도에서 이 장소를 바로 표시하도록 데이터 전달
+    sessionStorage.setItem("map_focus_place", JSON.stringify(placeData));
+    sessionStorage.setItem("map_back_to_detail_id", id.toString());
+    sessionStorage.setItem("map_prev_screen", "detail");
+
+    import("./map.js").then(module => {
+      module.loadMapScreen();
+    });
+
+    document.getElementById("tabbar").style.display = "flex";
+  });
+
+  document.querySelector(".navigation").addEventListener("click", () => {
+    // const placeData = {
+    //   id: id,
+    //   name: data.name,
+    //   lat: data.lat,
+    //   lng: data.lng
+    // };
+
+    // sessionStorage.setItem("route_target", JSON.stringify(placeData));
+    // sessionStorage.setItem("map_focus_place", JSON.stringify(placeData));
+    // sessionStorage.setItem("map_back_to_detail_id", id);
+
+    // import("./route_map.js").then(module => {
+    //   module.loadRouteMapScreen();  // 네가 만든 route map 화면 로딩
+    // });
+
+    // document.getElementById("tabbar").style.display = "none";
+    alert("곧 기능을 연결할 예정입니다!");
   });
 
   // ================================

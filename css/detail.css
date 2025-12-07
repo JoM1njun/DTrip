@@ -246,3 +246,32 @@
     width: 27px;
     height: 27px;
 }
+
+.favorite-nav {
+    display: flex;
+    justify-content: space-between;
+    /* 양쪽 끝 배치 */
+    align-items: center;
+    /* 세로 가운데 정렬 */
+    margin-top: 10px;
+    width: 100%;
+}
+
+.navigation {
+    display: flex;
+    background: #6C63FF;
+    color: #fff;
+    margin-top: 40px;
+    width: 120px;
+    height: 55px;
+    border-radius: 15px;
+    cursor: pointer;
+    white-space: nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.navigation p {
+    font-size: 20px;
+    font-weight: 600;
+}

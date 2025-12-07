@@ -1,7 +1,7 @@
 // js/screens/map.js
 import { db } from "../database/firebase.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-import { userLocation } from "../app.js";
+import { showHome, userLocation } from "../app.js";
 import { startBusTracking } from "../components/busTracker.js";
 import { loadRoutePathAndFocus } from "../components/busRoute.js";
 import { loadTags } from "../components/categoryTagLoader.js";
@@ -23,17 +23,89 @@ export async function loadMapScreen() {
   content.innerHTML = `
       <div id="mapWrapper">
         <section id="MaptagContainer">
+          <button class="back-btn" id="MapBackBtn">
+            <img src="assets/icons/back.svg" />
+          </button>
           <div id="maptagFilter"></div>
         </section>
         <div id="map" style="width:100%; height:100%;"></div>
       </div>
     `;
 
+  const backBtn = document.getElementById("MapBackBtn");
+  console.log("backBtn:", backBtn);
+
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      console.log("🔙 MapBackBtn clicked");
+
+      const detailId = sessionStorage.getItem("map_back_to_detail_id");
+      const prev = sessionStorage.getItem("map_prev_screen");
+
+      if (detailId) {
+        loadPlaceDetailPage(detailId);
+        sessionStorage.removeItem("map_back_to_detail_id");
+        return;
+      }
+      switch (prev) {
+        case "home":
+          import("./home.js").then(({ loadHomeScreen }) => {
+            showHome();
+            loadHomeScreen();
+            setActive("home");
+          });
+          break;
+
+        case "favorite":
+          import("./favorite.js").then(({ loadFavoriteScreen }) => {
+            loadFavoriteScreen();
+            setActive("favorite");
+          });
+          break;
+
+        case "menu":
+          import("./menu.js").then(({ loadMenuScreen }) => {
+            loadMenuScreen();
+            setActive("menu");
+          });
+          break;
+
+        default:
+          // 기록이 없으면 기본 home
+          import("./home.js").then(({ loadHomeScreen }) => {
+            showHome();
+            loadHomeScreen();
+            setActive("home");
+          });
+          break;
+      }
+
+      // 💡 최종적으로 기록 삭제
+      sessionStorage.removeItem("map_prev_screen");
+    });
+  }
+
   await loadTags("maptagFilter");
   registerTagFilterEvents();
 
   await loadKakaoMap();
-  initMapWithUserLocation();
+
+  const focusPlace = sessionStorage.getItem("map_focus_place");
+
+  if (!focusPlace) {
+    // ⭐ 일반적으로 지도 탭을 눌러 들어온 경우 → 현재 위치 기준 초기화
+    initMapWithUserLocation();
+  } else {
+    // ⭐ SHOW MAP으로 진입한 경우 → 현재 위치 이동을 스킵한다!
+    initMapWithoutUserCentering();
+  }
+
+  // ⭐ 마커 포커싱 실행
+  if (focusPlace) {
+    const place = JSON.parse(focusPlace);
+    focusPlaceOnMap(place);
+    sessionStorage.removeItem("map_focus_place");
+  }
 
   setTimeout(async () => {
     if (selectedTag) {
@@ -253,3 +325,31 @@ function startMovementTracking() {
   );
 }
 
+// Deatil show map Button
+export function focusPlaceOnMap(place) {
+  if (!mapInstance || !place.lat || !place.lng) return;
+
+  // 지도 중심 이동
+  const moveLatLng = new kakao.maps.LatLng(place.lat, place.lng);
+  mapInstance.setCenter(moveLatLng);
+
+  // 마커 표시
+  const marker = new kakao.maps.Marker({
+    map: mapInstance,
+    position: moveLatLng
+  });
+
+  // 인포윈도우
+  const info = new kakao.maps.InfoWindow({
+    position: moveLatLng,
+    content: `<div style="padding:8px;">${place.name}</div>`
+  });
+  info.open(mapInstance, marker);
+}
+
+function initMapWithoutUserCentering() {
+  mapInstance = new kakao.maps.Map(document.getElementById("map"), {
+    center: new kakao.maps.LatLng(36.35, 127.38),  // 대전 중심 등 기본값
+    level: 5
+  });
+}
