@@ -4,14 +4,28 @@ import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.2/
 import { userLocation } from "../app.js";
 import { startBusTracking } from "../components/busTracker.js";
 import { loadRoutePathAndFocus } from "../components/busRoute.js";
+import { loadTags } from "../components/categoryTagLoader.js";
+
+let mapInstance = null;
+let placeMarkers = [];
+let compassMarker = null
+let compassMarkerElement = null;
 
 // 지도 화면 생성
 export async function loadMapScreen() {
   const content = document.getElementById("content");
 
   content.innerHTML = `
-        <div id="map" style="width:100%; height:844px;"></div>
+      <div id="mapWrapper">
+        <section id="MaptagContainer">
+          <div id="maptagFilter"></div>
+        </section>
+        <div id="map" style="width:100%; height:100%;"></div>
+      </div>
     `;
+
+  await loadTags("maptagFilter");
+  registerTagFilterEvents();
 
   await loadKakaoMap();
   initMapWithUserLocation();
@@ -39,15 +53,10 @@ async function initMapWithUserLocation() {
     level: 4
   });
 
-  // 2. 현재 위치 마커 추가
-  if (userLocation) {
-    new kakao.maps.Marker({
-      position: new kakao.maps.LatLng(lat, lng),
-      map,
-    });
-  }
+  mapInstance = map;
 
-  // 3. 기기 위치 불러오기
+
+  // 2. 기기 위치 불러오기
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -59,11 +68,7 @@ async function initMapWithUserLocation() {
         // 4. 지도 중심을 현재 위치로 변경
         map.setCenter(currentPos);
 
-        // (선택) 말풍선
-        // const infowindow = new kakao.maps.InfoWindow({
-        //   content: '<div style="padding:6px;">현재 위치</div>'
-        // });
-        // infowindow.open(map, marker);
+        createCompassMarker(lat, lng);
       },
       (err) => {
         console.warn("위치 정보를 가져올 수 없음:", err);
@@ -72,6 +77,12 @@ async function initMapWithUserLocation() {
   } else {
     alert("이 브라우저는 위치 서비스를 지원하지 않습니다.");
   }
+
+  // 1) 실시간 이동 추적
+  startMovementTracking();
+
+  // 2) 기기 방향(heading) 추적
+  startHeadingTracking();
 }
 
 // 카카오맵 API 연결
@@ -92,3 +103,113 @@ export async function loadKakaoMap() {
     document.head.appendChild(script);
   });
 }
+
+function updateMarkers(places) {
+  // 기존 마커 제거
+  placeMarkers.forEach(m => m.setMap(null));
+  placeMarkers = [];
+
+  places.forEach(p => {
+    if (!p.lat || !p.lng) return;
+
+    const marker = new kakao.maps.Marker({
+      map: mapInstance,
+      position: new kakao.maps.LatLng(p.lat, p.lng)
+    });
+
+    placeMarkers.push(marker);
+  });
+
+  // 지도 범위 자동 조정
+  if (places.length > 0) {
+    const bounds = new kakao.maps.LatLngBounds();
+    places.forEach(p => bounds.extend(new kakao.maps.LatLng(p.lat, p.lng)));
+    mapInstance.setBounds(bounds);
+  }
+}
+
+// Tag Location Load
+async function loadPlacesByTag(tagName) {
+  const snapshot = await getDocs(collection(db, "Places"));
+
+  const list = snapshot.docs
+    .map(doc => doc.data())
+    .filter(place =>
+      place.tag === tagName ||
+      place.tags?.includes(tagName)
+    );
+
+  return list;
+}
+
+
+// Tag Click event
+function registerTagFilterEvents() {
+  document.querySelectorAll("#maptagFilter .tag").forEach(tag => {
+    tag.addEventListener("click", async () => {
+      const tagName = tag.dataset.tag;
+
+      // 🔥 기존 선택 제거
+      document.querySelectorAll("#maptagFilter .tag").forEach(t => {
+        t.classList.remove("selected");
+      });
+
+      // 🔥 새 선택 태그 강조
+      tag.classList.add("selected");
+
+      console.log("선택된 태그:", tagName);
+
+      const places = await loadPlacesByTag(tagName);
+      updateMarkers(places);
+    });
+  });
+}
+
+// 마커 생성
+function createCompassMarker(lat, lng) {
+  compassMarker = new kakao.maps.Marker({
+    map: mapInstance,
+    position: new kakao.maps.LatLng(lat, lng),
+    image: new kakao.maps.MarkerImage(
+      "assets/icons/myLocation.svg",
+      new kakao.maps.Size(30, 30),
+      { offset: new kakao.maps.Point(20, 20) }
+    )
+  });
+
+  // DOM 렌더링 후 실제 이미지 태그를 가져온다
+  setTimeout(() => {
+    compassMarkerElement = document.querySelector(
+      `img[src="assets/icons/myLocation.svg"]`
+    );
+  }, 300);
+}
+
+// 마커 방향 회전
+function startHeadingTracking() {
+  window.addEventListener("deviceorientation", (event) => {
+    const heading = event.webkitCompassHeading || event.alpha;
+
+    if (compassMarkerElement && heading != null) {
+      compassMarkerElement.style.transform = `rotate(${heading}deg)`;
+    }
+  });
+}
+
+// 마커 위치 추적
+function startMovementTracking() {
+  navigator.geolocation.watchPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      const newPos = new kakao.maps.LatLng(lat, lng);
+
+      compassMarker.setPosition(newPos);
+      mapInstance.setCenter(newPos); // 따라오기 모드
+    },
+    (err) => console.warn(err),
+    { enableHighAccuracy: true }
+  );
+}
+

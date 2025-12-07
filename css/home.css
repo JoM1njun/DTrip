@@ -150,7 +150,6 @@ body::-webkit-scrollbar {
 .tag.selected {
   background: #b299ff;
   /* 원하는 색 */
-
   transition: 0.2s;
 }
 

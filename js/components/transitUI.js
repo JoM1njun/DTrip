@@ -5,8 +5,8 @@ const transitCache = {};
 
 // mode → 아이콘
 function getModeIcon(mode) {
-    if (mode === "WALK") return "🚶‍♂️";
-    if (mode === "BUS") return "🚌";
+    if (mode === "WALK") return "assets/route/walk.svg";
+    if (mode === "BUS") return "assets/route/bus.svg";
     if (mode === "SUBWAY") return "🚇";
     return "➡️";
 }
@@ -92,38 +92,6 @@ export async function renderTransitPanel(places) {
 
     const segments = [];
 
-    // 연속된 장소 쌍마다 대중교통 경로 요청
-    // for (let i = 0; i < places.length - 1; i++) {
-    //     const start = places[i];
-    //     const end = places[i + 1];
-
-    //     try {
-    //         // 너무 많이 호출되지 않도록 약간 딜레이
-    //         await new Promise(r => setTimeout(r, 400));
-
-    //         const raw = await getTransitRouteCached(
-    //             { lat: start.lat, lng: start.lng, name: start.name },
-    //             { lat: end.lat, lng: end.lng, name: end.name }
-    //         );
-
-    //         const parsed = parseTransitItinerary(raw);
-    //         if (!parsed) continue;
-
-    //         segments.push({
-    //             index: i + 1,
-    //             from: start.name,
-    //             to: end.name,
-    //             ...parsed
-    //         });
-    //     } catch (err) {
-    //         console.error("❌ 대중교통 경로 요청 실패:", err);
-    //     }
-    // }
-
-    // if (segments.length === 0) {
-    //     panel.innerHTML = "<p>표시할 대중교통 경로가 없습니다.</p>";
-    //     return;
-    // }
     for (let i = 0; i < places.length - 1; i++) {
         const start = places[i];
         const end = places[i + 1];

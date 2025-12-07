@@ -19,13 +19,14 @@ export async function loadUserRouteMap(user) {
 
     content.innerHTML = "";
     content.innerHTML =
-        `<section id="routeContainer" class="route-container">
+        `
         <div class="route-header">
             <p>${user.name}님의 경로</p>
             <button id="routeBackBtn" class="back-btn">
                 <img src="assets/icons/back.svg" />
             </button>
         </div>
+        <section id="routeContainer" class="route-container">
             <div id="map"></div>
             <div id="bottomSheet">
                 <div id="sheetHandle"></div>
@@ -48,6 +49,25 @@ export async function loadUserRouteMap(user) {
     console.log("👉 변환된 placeData:", placeData);
 
     initRouteMap(placeData);
+
+    enableBottomSheetDrag();
+
+    const bs = document.getElementById("bottomSheet");
+    console.log("bottomSheet:", bs);
+
+    if (bs) {
+        console.log("offsetHeight:", bs.offsetHeight);
+    } else {
+        console.log("❌ bottomSheet 없음 (지금 화면이 아님)");
+    }
+
+    const h = document.getElementById("sheetHandle");
+    console.log("sheetHandle:", h);
+
+    if (h) {
+        console.log("handle offsetHeight:", h.offsetHeight);
+        console.log("handle computed height:", getComputedStyle(h).height);
+    }
 
     setTimeout(() => {
         window.scrollTo(0, 0);
@@ -112,5 +132,66 @@ async function initRouteMap(places) {
     map.setBounds(bounds);
 
     renderTransitPanel(places);
+}
+
+function enableBottomSheetDrag() {
+    const sheet = document.getElementById("bottomSheet");
+    const handle = document.getElementById("sheetHandle");
+
+    if (!sheet || !handle) {
+        console.warn("❌ bottomSheet 또는 sheetHandle을 찾지 못했습니다.");
+        return;
+    }
+
+    let startY = 0;
+    let currentY = 0;
+    let sheetY = 0; // 현재 translateY 값
+
+    const sheetHeight = window.innerHeight * 0.25; // 25vh
+    const MAX_UP = window.innerHeight * 0.20;   // 위로 20%
+    const MAX_DOWN = window.innerHeight * sheetHeight; // 아래로 60%
+
+    // 초기 위치 (조금 내려와 있게)
+    sheet.style.transition = "transform 0.25s ease";
+    sheet.style.transform = `translateY(${MAX_DOWN - 40}px)`;
+
+    const onTouchStart = (e) => {
+        startY = e.touches[0].clientY;
+        const match = sheet.style.transform.match(/translateY\(([-0-9.]+)px\)/);
+        sheetY = match ? parseFloat(match[1]) : 0;
+    };
+    const onTouchMove = (e) => {
+        currentY = e.touches[0].clientY;
+        const diff = currentY - startY;
+
+        let newY = sheetY + diff;
+
+        // 범위 제한
+        newY = Math.max(MAX_UP, Math.min(MAX_DOWN, newY));
+
+        sheet.style.transition = "none";
+        sheet.style.transform = `translateY(${newY}px)`;
+    };
+
+    const onTouchEnd = (e) => {
+        sheet.style.transition = "transform 0.25s ease";
+
+        const match = sheet.style.transform.match(/translateY\(([-0-9.]+)px\)/);
+        const finalY = match ? parseFloat(match[1]) : 0;
+
+        // 스냅 기준은 중앙
+        const mid = (MAX_UP + MAX_DOWN) / 2;
+
+        // 스냅 기준은 중앙
+        if (finalY < mid) {
+            sheet.style.transform = `translateY(${MAX_UP}px)`;  // 위로 스냅
+        } else {
+            sheet.style.transform = `translateY(${MAX_DOWN}px)`; // 아래로 스냅
+        }
+    };
+
+    handle.addEventListener("touchstart", onTouchStart);
+    handle.addEventListener("touchmove", onTouchMove);
+    handle.addEventListener("touchend", onTouchEnd);
 }
 

@@ -7,13 +7,16 @@
 }
 
 .route-header {
+    position: fixed;
     display: flex;
+    width: 100%;
     height: 100px;
     justify-content: center;
     align-items: center;
     border-bottom-left-radius: 25px;
     border-bottom-right-radius: 25px;
     background: #BEB9FF;
+    z-index: 10;
 }
 
 .route-header p {
@@ -37,12 +40,14 @@
 }
 
 #map {
+    position: fixed;
     width: 100%;
-    height: 65vh;
+    height: 100vh;
+    z-index: 1;
 }
 
 #bottomSheet {
-    position: absolute;
+    position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
@@ -53,24 +58,33 @@
     /* 최대로 올릴 수 있는 높이 */
 
     background: #fff;
-    border-radius: 16px 16px 0 0;
+    border-radius: 25px 25px 0 0;
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
 
     z-index: 10;
     /* 지도 위에 */
     display: flex;
     flex-direction: column;
+    overflow: visible;
 
     transition: height 0.25s ease;
+    will-change: transform;
 }
 
 /* 슬라이드 손잡이 */
 #sheetHandle {
-    width: 45px;
-    height: 5px;
-    background: #ddd;
-    border-radius: 3px;
-    margin: 10px auto;
+    position: absolute !important;
+    top: 5px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+
+    width: 55px !important;
+    height: 5px !important;
+    background: #999 !important;
+    border-radius: 999px;
+
+    z-index: 9999 !important;
+    pointer-events: auto;
 }
 
 /* 전체 패널 */
