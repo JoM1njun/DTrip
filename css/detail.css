@@ -94,10 +94,11 @@
 .detail-row {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 0px;
+    align-items: flex-start;
+    gap: 3px;
     margin-bottom: 12px;
     margin-left: auto;
+
 }
 
 .detail-row p {
@@ -109,6 +110,12 @@
 .detail-row img {
     width: 20px;
     height: 20px;
+}
+
+.detail_phone a {
+    text-decoration: none;
+    color: inherit;
+    /* 기존 글씨색 그대로 */
 }
 
 /* 리뷰와 좋아요 */

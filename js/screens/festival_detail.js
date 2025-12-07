@@ -40,7 +40,7 @@ export async function loadFestivalDetail(id) {
         <div class="festival-detail-info">
             <p class="date"><img src="assets/festival/festival_icons/calender.svg" />${f.date}</p>
             <p class="address"><img src="assets/festival/festival_icons/location.svg" />${f.address}</p>
-            <p class="phone"><img src="assets/festival/festival_icons/phone.svg" />${f.phone}</p>
+            <p class="phone"><img src="assets/festival/festival_icons/phone.svg" /><a href="tel:${f.phone}">${f.phone}</a></p>
             <p class="price"><img src="assets/festival/festival_icons/price.svg" />${f.price}</p>
         </div>
 

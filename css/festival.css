@@ -167,6 +167,12 @@
     font-weight: 500;
 }
 
+.festival-phone a {
+    text-decoration: none;
+    color: inherit;
+    /* 기존 글씨색 그대로 */
+}
+
 .festival-sns {
     display: flex;
     right: 10px;
@@ -257,6 +263,11 @@
     height: 15px;
     margin-right: 10px;
     vertical-align: middle;
+}
+
+.festival-detail-info .phone a {
+    text-decoration: none;
+    color: inherit;
 }
 
 .festival-button-container {

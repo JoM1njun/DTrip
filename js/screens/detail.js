@@ -62,8 +62,8 @@ export async function loadPlaceDetailPage(id) {
                 <p class="detail_time"><img src="assets/icons/time.svg" />${data.time_start ?? "운영 시간 정보 없음"
     } ~ ${data.time_end ?? "운영 시간 정보 없음"}</p>
             <!-- 전화번호 -->
-                <p class="detail_phone"><img src="assets/icons/phone.svg" /> ${data.phone ?? "전화번호 없음"
-    }</p>
+                <p class="detail_phone"><img src="assets/icons/phone.svg" /><a href="tel:${data.phone}"> ${data.phone ?? "전화번호 없음"}</a>
+                </p>
             </div>
         </div>
 

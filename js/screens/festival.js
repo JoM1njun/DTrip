@@ -14,7 +14,7 @@ export async function loadFestivalList() {
 
     content.innerHTML = `
       <section class="festival-header">
-        <button id="backHome" class="back-btn">
+        <button id="Festivalback" class="back-btn">
           <img src="assets/icons/back.svg"/>
         </button>
       </section>
@@ -38,7 +38,7 @@ export async function loadFestivalList() {
     `;
 
     // 뒤로가기 버튼
-    document.getElementById("backHome").addEventListener("click", () => {
+    document.getElementById("Festivalback").addEventListener("click", () => {
         showHome();
         document.getElementById("tabbar").style.display = "flex";
         import("./home.js").then(m => m.loadHomeScreen());
@@ -61,11 +61,11 @@ export async function loadFestivalList() {
                 <div class="festival-phone-sns">
                     <div class="festival-phone">
                         <img src="assets/festival/festival_icons/phone.svg" />
-                        <span>${f.phone}</span>
+                        <span><a href="tel:${f.phone}">${f.phone}</a></span>
                     </div>
                     <div class="festival-sns">
-                        <img src="assets/icons/instagram.svg" alt="instagram"></img>
-                        <img src="assets/icons/home.svg" alt="home"></img>
+                        <img src="assets/icons/instagram.svg" alt="instagram" class="sns-link" data-link="${f.instagram ?? ""}"></img>
+                        <img src="assets/icons/home.svg" alt="home" class="sns-link" data-link="${f.home ?? ""}"></img>
                     </div>
                 </div>
             </div>
@@ -75,8 +75,26 @@ export async function loadFestivalList() {
     // 카드 클릭 → 상세 화면 이동
     document.querySelectorAll(".festival-card").forEach(card => {
         card.addEventListener("click", () => {
+
             const id = card.getAttribute("data-id");
             loadFestivalDetail(id);
+        });
+    });
+
+    document.querySelectorAll(".sns-link").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+
+            const url = btn.dataset.link;
+
+            if (!url || url.trim() === "" || url === "undefined" || url === "null") {
+                alert("링크가 존재하지 않습니다.");
+                return;
+            }
+
+            // 정상적인 URL만 이동
+            window.open(url, "_blank");
         });
     });
 }
