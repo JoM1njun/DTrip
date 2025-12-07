@@ -16,6 +16,8 @@ let selectedTag = null;
 
 // 지도 화면 생성
 export async function loadMapScreen() {
+  window.scrollTo(0, 0);
+
   const content = document.getElementById("content");
 
   content.innerHTML = `

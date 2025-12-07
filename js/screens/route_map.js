@@ -8,6 +8,8 @@ import { renderTransitPanel } from "../components/transitUI.js";
 
 
 export async function loadUserRouteMap(user) {
+    window.currentRouteUser = user;
+
     const content = document.getElementById("content");
     console.log("👉 전달된 user:", user);
 
@@ -102,10 +104,37 @@ async function initRouteMap(places) {
     });
 
     places.forEach(p => {
-        // 마커 표시
-        new kakao.maps.Marker({
+        if (!p.lat || !p.lng) return;
+
+        const imageUrl = p.image_url; // map.js와 동일하게 이미지 사용
+
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = `
+      <div style="
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid white;
+        box-shadow: 0 0 6px rgba(0,0,0,0.25);
+      ">
+        <img src="${imageUrl}" style="width:100%; height:100%; object-fit:cover;" />
+      </div>
+    `;
+
+        const markerEl = wrapper.firstElementChild;
+        markerEl.style.cursor = "pointer";
+
+        markerEl.addEventListener("click", () => {
+            sessionStorage.setItem("backTo", "route_map");
+            import("./detail.js").then(m => m.loadPlaceDetailPage(p.name));
+        });
+
+        const overlay = new kakao.maps.CustomOverlay({
             map,
-            position: new kakao.maps.LatLng(p.lat, p.lng)
+            position: new kakao.maps.LatLng(p.lat, p.lng),
+            content: markerEl,
+            yAnchor: 1
         });
     });
 

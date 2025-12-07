@@ -130,7 +130,21 @@ export async function loadPlaceDetailPage(id) {
   `;
 
   // 뒤로가기 기능
-  document.getElementById("detailBackBtn").addEventListener("click", () => {
+  document.getElementById("detailBackBtn").addEventListener("click", async () => {
+    const backTo = sessionStorage.getItem("backTo");
+
+    if (backTo === "route_map") {
+      sessionStorage.removeItem("backTo");
+
+      // 👉 뒤로갈 때 tabbar는 route_map 화면에서 숨겨져 있기 때문에 복원 X
+      const { loadUserRouteMap } = await import("./route_map.js");
+
+      loadUserRouteMap(window.currentRouteUser);
+      // ⭐ route_map에서 user 정보를 넘겨서 사용 중이므로 복귀 시 동일 user 필요
+
+      return;
+    }
+
     if (currentScreen === "seeall") {
       loadSeeAllPage(currentSeeAllType);
     } else if (currentScreen === "map") {
