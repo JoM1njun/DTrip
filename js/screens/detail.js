@@ -133,6 +133,9 @@ export async function loadPlaceDetailPage(id) {
   document.getElementById("detailBackBtn").addEventListener("click", () => {
     if (currentScreen === "seeall") {
       loadSeeAllPage(currentSeeAllType);
+    } else if (currentScreen === "map") {
+      import("./map.js").then(module => module.loadMapScreen());
+      document.getElementById("tabbar").style.display = "flex";
     } else {
       showHome();
       loadHomeScreen();

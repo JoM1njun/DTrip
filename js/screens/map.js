@@ -5,11 +5,14 @@ import { userLocation } from "../app.js";
 import { startBusTracking } from "../components/busTracker.js";
 import { loadRoutePathAndFocus } from "../components/busRoute.js";
 import { loadTags } from "../components/categoryTagLoader.js";
+import { loadPlaceDetailPage } from "./detail.js";
+import { setCurrentScreen } from "../app.js";
 
 let mapInstance = null;
 let placeMarkers = [];
 let compassMarker = null
 let compassMarkerElement = null;
+let selectedTag = null;
 
 // 지도 화면 생성
 export async function loadMapScreen() {
@@ -29,10 +32,20 @@ export async function loadMapScreen() {
 
   await loadKakaoMap();
   initMapWithUserLocation();
-  // loadRoutes();
 
-  // const demoRouteId = "30300001"; // 예시용 (ROUTE_CD 8자리)
-  // startBusTracking(demoRouteId);
+  setTimeout(async () => {
+    if (selectedTag) {
+      // UI에서 선택 표시
+      const tagEl = document.querySelector(`#maptagFilter .tag[data-tag="${selectedTag}"]`);
+      if (tagEl) {
+        tagEl.classList.add("selected");
+      }
+
+      // 장소 다시 불러오기
+      const places = await loadPlacesByTag(selectedTag);
+      updateMarkers(places);
+    }
+  }, 100);
 }
 
 // 카카오맵 초기화 및 위치 설정
@@ -105,22 +118,46 @@ export async function loadKakaoMap() {
 }
 
 function updateMarkers(places) {
-  // 기존 마커 제거
-  placeMarkers.forEach(m => m.setMap(null));
+  placeMarkers.forEach(o => o.setMap(null));
   placeMarkers = [];
 
   places.forEach(p => {
     if (!p.lat || !p.lng) return;
 
-    const marker = new kakao.maps.Marker({
-      map: mapInstance,
-      position: new kakao.maps.LatLng(p.lat, p.lng)
+    const imageUrl = p.image_url;
+
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = `
+      <div style="
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid white;
+        box-shadow: 0 0 6px rgba(0,0,0,0.25);
+      ">
+        <img src="${imageUrl}" style="width:100%; height:100%; object-fit:cover;" />
+      </div>
+    `;
+
+    const markerEl = wrapper.firstElementChild; // 실제 요소
+    markerEl.style.cursor = "pointer"; // 클릭 가능하게
+
+    markerEl.addEventListener("click", () => {
+      setCurrentScreen("map");
+      loadPlaceDetailPage(p.name);
     });
 
-    placeMarkers.push(marker);
+    const overlay = new kakao.maps.CustomOverlay({
+      map: mapInstance,
+      position: new kakao.maps.LatLng(p.lat, p.lng),
+      content: markerEl,
+      yAnchor: 1
+    });
+
+    placeMarkers.push(overlay);
   });
 
-  // 지도 범위 자동 조정
   if (places.length > 0) {
     const bounds = new kakao.maps.LatLngBounds();
     places.forEach(p => bounds.extend(new kakao.maps.LatLng(p.lat, p.lng)));
@@ -133,7 +170,7 @@ async function loadPlacesByTag(tagName) {
   const snapshot = await getDocs(collection(db, "Places"));
 
   const list = snapshot.docs
-    .map(doc => doc.data())
+    .map(doc => ({ id: doc.id, ...doc.data() }))
     .filter(place =>
       place.tag === tagName ||
       place.tags?.includes(tagName)
@@ -148,6 +185,7 @@ function registerTagFilterEvents() {
   document.querySelectorAll("#maptagFilter .tag").forEach(tag => {
     tag.addEventListener("click", async () => {
       const tagName = tag.dataset.tag;
+      selectedTag = tagName;
 
       // 🔥 기존 선택 제거
       document.querySelectorAll("#maptagFilter .tag").forEach(t => {
