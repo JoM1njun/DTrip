@@ -297,7 +297,9 @@ function createCompassMarker(lat, lng) {
     <div id="compassIcon" style="
       width: 30px;
       height: 30px;
-      transform-origin: 50% 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     ">
       <img id="compassImg" src="assets/icons/MyLocation.png" style="
         width: 100%;
@@ -341,13 +343,57 @@ function handleHeading(event) {
 
 // 마커 방향 회전
 function startHeadingTracking() {
-  window.addEventListener("deviceorientation", (event) => {
-    const heading = event.webkitCompassHeading || event.alpha;
+  // ---- iOS 권한 요청 처리 ----
+  if (typeof DeviceOrientationEvent !== "undefined" &&
+      typeof DeviceOrientationEvent.requestPermission === "function") {
 
-    if (!heading || !compassMarkerElement) return;
+    const permissionBtn = document.createElement("button");
+    permissionBtn.innerText = "📍 방향 센서 허용";
+    permissionBtn.style.position = "absolute";
+    permissionBtn.style.top = "80px";
+    permissionBtn.style.left = "10px";
+    permissionBtn.style.padding = "8px 14px";
+    permissionBtn.style.background = "#fff";
+    permissionBtn.style.border = "1px solid #333";
+    permissionBtn.style.borderRadius = "6px";
+    permissionBtn.style.zIndex = "9999";
+    permissionBtn.style.cursor = "pointer";
+    document.body.appendChild(permissionBtn);
 
+    permissionBtn.addEventListener("click", () => {
+      DeviceOrientationEvent.requestPermission()
+        .then((state) => {
+          if (state === "granted") {
+            alert("방향 센서 사용 허용됨!");
+            permissionBtn.remove();
+          }
+        })
+        .catch(console.error);
+    });
+  }
+
+  // ---- 방향 값 처리 ----
+  const handler = (event) => {
+    let heading = null;
+
+    // iOS (실제 나침반 값 제공)
+    if (event.webkitCompassHeading !== undefined) {
+      heading = event.webkitCompassHeading;
+    }
+    // Android
+    else if (event.alpha !== null) {
+      // alpha → 북 기준으로 변환 (카메라 방향 보정)
+      heading = 360 - event.alpha;
+    }
+
+    if (heading == null || !compassMarkerElement) return;
+
+    // 회전 적용
     compassMarkerElement.style.transform = `rotate(${heading}deg)`;
-  });
+  };
+
+  window.addEventListener("deviceorientationabsolute", handler, true);
+  window.addEventListener("deviceorientation", handler, true);
 }
 
 // 마커 위치 추적
@@ -374,6 +420,8 @@ function startMovementTracking() {
     (err) => console.warn(err),
     {
       enableHighAccuracy: true,
+      maximumAge: 500,
+      timeout: 10000
     }
   );
 }
