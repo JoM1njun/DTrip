@@ -10,6 +10,7 @@
  * - js/screens/p_ticket.js
  */
 import { loadPassPurchasePage } from "./p_ticket.js";
+import { loadMyTicketScreen } from "./m_ticket.js";
 
 // js/screens/menu.js
 // 마이페이지 / 메뉴 화면
@@ -159,6 +160,10 @@ function attachMenuListeners() {
   // 나의 패스권 보기
   document.getElementById("btnMyPass")?.addEventListener("click", () => {
     alert("구매한 패스권이 없습니다.");
+  });
+
+  document.getElementById("btnMyPass")?.addEventListener("click", () => {
+    loadMyTicketScreen();
   });
 
   // 문의사항

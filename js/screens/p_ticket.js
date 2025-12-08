@@ -100,7 +100,7 @@ export function loadPassPurchasePage() {
                     
                     <div class="p-ticket-buy-btn-wrapper">
                         <button class="p-ticket-buy-btn" id="buyBtn">
-                            <img src="assets/icons/ticket.svg" alt="Ticket">
+                            <img src="assets/menu/ticket.svg" alt="Ticket">
                             예매
                         </button>
                         <span class="p-ticket-price" id="resPrice">0원</span>
