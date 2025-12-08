@@ -1,7 +1,7 @@
 export async function getTransitRoute(payload) {
     console.log("📌 Sending coords to server:", payload);
 
-    const response = await fetch("https://dtrip.onrender.com/api/transit", {
+    const response = await fetch("https://dtrip.onrender.com/api/transit-cached-parsed", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
