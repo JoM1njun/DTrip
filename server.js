@@ -1,6 +1,9 @@
 import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
+import { db } from "./firebaseAdmin.js";
+import { doc, getDoc, setDoc } from "firebase-admin/firestore";
+
 
 const TMAP_KEY = process.env.TMAP_KEY;
 const app = express();
@@ -10,6 +13,22 @@ app.use(express.json());
 // const SERVICE_KEY = "9152a33db8805474901b834fd11ad3fe3a2e69a432d7468eee1fde7afe57de2d";
 const SERVICE_KEY = encodeURIComponent("36781dec23b439f774a5a628c913a453ef964b60b0e1aacf8b8ff7fdec8cee3f");
 const PORT = process.env.PORT || 10000;
+
+const ref = doc(db, "RouteCache", key);
+const snap = await getDoc(ref);
+
+if (snap.exists()) {
+  const cached = snap.data();
+
+  // 1시간 캐싱 예시
+  const EXPIRE = 1000 * 60 * 60;
+
+  if (Date.now() - cached.createdAt.toMillis() < EXPIRE) {
+    console.log("📦 Firestore 캐시 사용");
+    return res.json(cached.data);
+  }
+}
+
 
 app.get("/api/routes", async (req, res) => {
   const { cityCode, routeId } = req.query;
@@ -183,6 +202,75 @@ app.post("/api/route", async (req, res) => {
   }
 });
 
+const CACHE_EXPIRE = 1000 * 60 * 60; // 1시간
+
+app.post("/api/transit-cached", async (req, res) => {
+  const { startX, startY, endX, endY, startName, endName } = req.body;
+
+  if (!startX || !startY || !endX || !endY) {
+    return res.status(400).json({ error: "좌표가 누락되었습니다." });
+  }
+
+  // 🔑 캐시 Key
+  const key = `${startName}_${endName}`;
+  const cacheRef = doc(db, "RouteCache", key);
+
+  try {
+    // 1️⃣ Firestore 캐시 체크
+    const snap = await getDoc(cacheRef);
+
+    if (snap.exists()) {
+      const { data, createdAt } = snap.data();
+
+      const expired = Date.now() - createdAt.toMillis() > CACHE_EXPIRE;
+
+      if (!expired) {
+        console.log("📦 캐시 사용");
+        return res.json(data);
+      }
+
+      console.log("⚠️ 캐시 만료 → 새로 API 호출");
+    } else {
+      console.log("❌ 캐시 없음 → 새 API 호출");
+    }
+
+    // 2️⃣ TMAP API 호출
+    const payload = {
+      startX: String(startX),
+      startY: String(startY),
+      endX: String(endX),
+      endY: String(endY),
+      count: 3,
+      lang: 0,
+      format: "json",
+    };
+
+    const tmapResponse = await fetch("https://apis.openapi.sk.com/transit/routes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "appKey": TMAP_KEY
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const json = await tmapResponse.json();
+
+    // 3️⃣ Firestore에 저장
+    await setDoc(cacheRef, {
+      data: json,
+      createdAt: new Date(),
+    });
+
+    console.log("💾 새로운 데이터 캐싱 완료");
+
+    return res.json(json);
+
+  } catch (err) {
+    console.error("캐싱 API 오류:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
 app.listen(PORT, () => {

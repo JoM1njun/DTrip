@@ -266,8 +266,10 @@
 }
 
 .festival-detail-info .phone a {
-    text-decoration: none;
-    color: inherit;
+    color: #0066ff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 500;
 }
 
 .festival-button-container {

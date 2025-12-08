@@ -1,6 +1,9 @@
 // js/screens/map.js
 import { db } from "../database/firebase.js";
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+import {
+  collection,
+  getDocs,
+} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 import { showHome, userLocation } from "../app.js";
 import { startBusTracking } from "../components/busTracker.js";
 import { loadRoutePathAndFocus } from "../components/busRoute.js";
@@ -10,9 +13,11 @@ import { setCurrentScreen } from "../app.js";
 
 let mapInstance = null;
 let placeMarkers = [];
-let compassMarker = null
+let compassMarker = null;
 let compassMarkerElement = null;
 let selectedTag = null;
+let autoCenter = true;
+let myLocationMarker = null;
 
 // 지도 화면 생성
 export async function loadMapScreen() {
@@ -28,7 +33,12 @@ export async function loadMapScreen() {
           </button>
           <div id="maptagFilter"></div>
         </section>
+
         <div id="map" style="width:100%; height:100%;"></div>
+
+        <button id="recenterBtn" class="recenter-btn">
+          <img src="assets/icons/currentLocation.svg" />
+        </button>
       </div>
     `;
 
@@ -110,7 +120,9 @@ export async function loadMapScreen() {
   setTimeout(async () => {
     if (selectedTag) {
       // UI에서 선택 표시
-      const tagEl = document.querySelector(`#maptagFilter .tag[data-tag="${selectedTag}"]`);
+      const tagEl = document.querySelector(
+        `#maptagFilter .tag[data-tag="${selectedTag}"]`
+      );
       if (tagEl) {
         tagEl.classList.add("selected");
       }
@@ -120,6 +132,13 @@ export async function loadMapScreen() {
       updateMarkers(places);
     }
   }, 100);
+
+  document.getElementById("recenterBtn").addEventListener("click", enableAutoCenter);
+
+  // Drag시 자동 중심 맞추기 해제
+  kakao.maps.event.addListener(mapInstance, "dragstart", () => {
+    autoCenter = false;
+  });
 }
 
 // 카카오맵 초기화 및 위치 설정
@@ -137,11 +156,10 @@ async function initMapWithUserLocation() {
 
   const map = new kakao.maps.Map(container, {
     center: new kakao.maps.LatLng(lat, lng),
-    level: 4
+    level: 4,
   });
 
   mapInstance = map;
-
 
   // 2. 기기 위치 불러오기
   if (navigator.geolocation) {
@@ -192,10 +210,10 @@ export async function loadKakaoMap() {
 }
 
 function updateMarkers(places) {
-  placeMarkers.forEach(o => o.setMap(null));
+  placeMarkers.forEach((o) => o.setMap(null));
   placeMarkers = [];
 
-  places.forEach(p => {
+  places.forEach((p) => {
     if (!p.lat || !p.lng) return;
 
     const imageUrl = p.image_url;
@@ -226,7 +244,7 @@ function updateMarkers(places) {
       map: mapInstance,
       position: new kakao.maps.LatLng(p.lat, p.lng),
       content: markerEl,
-      yAnchor: 1
+      yAnchor: 1,
     });
 
     placeMarkers.push(overlay);
@@ -234,7 +252,7 @@ function updateMarkers(places) {
 
   if (places.length > 0) {
     const bounds = new kakao.maps.LatLngBounds();
-    places.forEach(p => bounds.extend(new kakao.maps.LatLng(p.lat, p.lng)));
+    places.forEach((p) => bounds.extend(new kakao.maps.LatLng(p.lat, p.lng)));
     mapInstance.setBounds(bounds);
   }
 }
@@ -244,25 +262,21 @@ async function loadPlacesByTag(tagName) {
   const snapshot = await getDocs(collection(db, "Places"));
 
   const list = snapshot.docs
-    .map(doc => ({ id: doc.id, ...doc.data() }))
-    .filter(place =>
-      place.tag === tagName ||
-      place.tags?.includes(tagName)
-    );
+    .map((doc) => ({ id: doc.id, ...doc.data() }))
+    .filter((place) => place.tag === tagName || place.tags?.includes(tagName));
 
   return list;
 }
 
-
 // Tag Click event
 function registerTagFilterEvents() {
-  document.querySelectorAll("#maptagFilter .tag").forEach(tag => {
+  document.querySelectorAll("#maptagFilter .tag").forEach((tag) => {
     tag.addEventListener("click", async () => {
       const tagName = tag.dataset.tag;
       selectedTag = tagName;
 
       // 🔥 기존 선택 제거
-      document.querySelectorAll("#maptagFilter .tag").forEach(t => {
+      document.querySelectorAll("#maptagFilter .tag").forEach((t) => {
         t.classList.remove("selected");
       });
 
@@ -283,16 +297,16 @@ function createCompassMarker(lat, lng) {
     map: mapInstance,
     position: new kakao.maps.LatLng(lat, lng),
     image: new kakao.maps.MarkerImage(
-      "assets/icons/myLocation.svg",
+      "assets/icons/MyLocation.png",
       new kakao.maps.Size(30, 30),
       { offset: new kakao.maps.Point(20, 20) }
-    )
+    ),
   });
 
   // DOM 렌더링 후 실제 이미지 태그를 가져온다
   setTimeout(() => {
     compassMarkerElement = document.querySelector(
-      `img[src="assets/icons/myLocation.svg"]`
+      `img[src="assets/icons/MyLocation.png"]`
     );
   }, 300);
 }
@@ -314,15 +328,34 @@ function startMovementTracking() {
     (pos) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
+      const loc = new kakao.maps.LatLng(lat, lng);
 
-      const newPos = new kakao.maps.LatLng(lat, lng);
+      if (compassMarker) {
+        myLocationMarker.setPosition(loc);
+      }
 
-      compassMarker.setPosition(newPos);
-      mapInstance.setCenter(newPos); // 따라오기 모드
+      if (autoCenter) {
+        mapInstance.setCenter(loc);
+      }
+
+      // compassMarker.setPosition(newPos);
+      // mapInstance.setCenter(newPos); // 따라오기 모드
     },
     (err) => console.warn(err),
-    { enableHighAccuracy: true }
+    {
+      enableHighAccuracy: true,
+    }
   );
+}
+
+// 자동 중심 추적
+function enableAutoCenter() {
+  autoCenter = true;
+
+  if (myLocationMarker) {
+    const pos = myLocationMarker.getPosition();
+    mapInstance.setCenter(pos);
+  }
 }
 
 // Deatil show map Button
@@ -336,20 +369,23 @@ export function focusPlaceOnMap(place) {
   // 마커 표시
   const marker = new kakao.maps.Marker({
     map: mapInstance,
-    position: moveLatLng
+    position: moveLatLng,
   });
 
   // 인포윈도우
   const info = new kakao.maps.InfoWindow({
     position: moveLatLng,
-    content: `<div style="padding:8px;">${place.name}</div>`
+    content: `<div style="padding:8px;">${place.name}</div>`,
   });
   info.open(mapInstance, marker);
 }
 
 function initMapWithoutUserCentering() {
   mapInstance = new kakao.maps.Map(document.getElementById("map"), {
-    center: new kakao.maps.LatLng(36.35, 127.38),  // 대전 중심 등 기본값
-    level: 5
+    center: new kakao.maps.LatLng(36.35, 127.38), // 대전 중심 등 기본값
+    level: 5,
   });
+
+  startMovementTracking();  // ✔ 추가
+  startHeadingTracking();   // ✔ 나침반도 추가
 }

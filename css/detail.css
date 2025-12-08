@@ -113,9 +113,10 @@
 }
 
 .detail_phone a {
-    text-decoration: none;
-    color: inherit;
-    /* 기존 글씨색 그대로 */
+    color: #0066ff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 500;
 }
 
 /* 리뷰와 좋아요 */
