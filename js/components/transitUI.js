@@ -83,34 +83,41 @@ export async function renderTransitPanel(places) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              startX: start.lng,
-              startY: start.lat,
-              endX: end.lng,
-              endY: end.lat,
               startName: start.name,
               endName: end.name,
             }),
           }
         );
-
-        const data = await res.json();
-        parsed = data.result; // 서버에서 파싱된 값
+        parsed = await res.json();
       }
 
-      // 🔥 fallback 적용
-      if (!parsed) {
-        console.warn(`⚠ 구간 ${i + 1} 경로 없음 → 도보 fallback 사용`);
-        parsed = createWalkFallback(start, end);
-      }
+      // 🔥🔥🔥 여기 두 줄 추가
+      console.log("parsed:", parsed);
+      console.log("parsed.segments:", parsed?.segments);
 
-      segments.push({
-        index: i + 1,
-        from: start.name,
-        to: end.name,
-        ...parsed,
-      });
+      if (parsed?.legs) {
+        parsed.index = i + 1;
+        parsed.from = parsed.from ?? start.name;
+        parsed.to = parsed.to ?? end.name;
+        parsed.totalTimeMin =
+          parsed.totalTimeMin ??
+          parsed.legs.reduce((a, l) => a + (l.timeMin ?? 0), 0);
+        parsed.totalFare = parsed.totalFare ?? 0;
+
+        segments.push(parsed); // 🔥 이제 제대로 된 segment 구조가 들어간다
+      } else {
+        // 🔥 legs 없음 → fallback 생성
+        console.warn("⚠️ legs 없음 → fallback 사용");
+
+        const fallback = createWalkFallback(start, end);
+        fallback.index = i + 1;
+        fallback.from = start.name;
+        fallback.to = end.name;
+
+        segments.push(fallback);
+      }
     } catch (err) {
-      console.error("❌ 구간 처리 중 오류:", err);
+      console.error("🚨 Transit API 오류:", err);
     }
   }
 

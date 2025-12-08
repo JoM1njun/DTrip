@@ -41,7 +41,7 @@ export function loadPassPurchasePage() {
             <div class="p-ticket-date-box" id="dateBox">
                 <input type="date" id="dateInput" class="p-ticket-real-date-input" value="${selectedDate}">
                 <div class="p-ticket-date-left">
-                    <img src="assets/icons/calendar.svg" class="p-ticket-icon" alt="Calendar">
+                    <img src="assets/menu/calendar.svg" class="p-ticket-icon" alt="Calendar">
                     <span>날짜 선택</span>
                 </div>
                 <div class="p-ticket-date-value" id="dateDisplay">${formatDate(selectedDate)}</div>
