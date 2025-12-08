@@ -28,7 +28,7 @@ export function loadPassPurchasePage() {
         <!-- 헤더 -->
         <header class="p-ticket-header">
             <button class="p-ticket-back-btn" id="pTicketBackBtn">
-                <img src="assets/icons/back.svg" alt="Back" style="width: 12px; height: 12px;">
+                <img src="assets/menu/back.svg" alt="Back" style="width: 12px; height: 12px;">
             </button>
             <h1 class="p-ticket-title">패스권 구매</h1>
         </header>
@@ -225,7 +225,18 @@ function setupEventListeners() {
     buyBtn.addEventListener("click", () => {
         const total = (adultCount * PRICE_ADULT) + (childCount * PRICE_CHILD);
         if (confirm(`총 ${total.toLocaleString()}원 결제하시겠습니까?`)) {
-            alert("예매 완료!");
+
+            // 데이터 저장 (나의 패스권 보기에서 사용)
+            const ticketData = {
+                date: selectedDate,
+                adultCount: adultCount,
+                childCount: childCount,
+                price: total,
+                timestamp: new Date().getTime()
+            };
+            localStorage.setItem("dTrip_ticket", JSON.stringify(ticketData));
+
+            alert("예매 완료! [나의 패스권 보기]에서 확인 가능합니다.");
             buyBtn.textContent = "완료";
             buyBtn.disabled = true;
         }
