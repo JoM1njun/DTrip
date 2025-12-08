@@ -28,7 +28,7 @@ export function loadPassPurchasePage() {
         <!-- 헤더 -->
         <header class="p-ticket-header">
             <button class="p-ticket-back-btn" id="pTicketBackBtn">
-                <img src="assets/menu/back.svg" alt="Back" style="width: 12px; height: 12px;">
+                <img src="assets/icons/back.svg" alt="Back" style="width: 12px; height: 12px;">
             </button>
             <h1 class="p-ticket-title">패스권 구매</h1>
         </header>

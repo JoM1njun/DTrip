@@ -157,11 +157,6 @@ function attachMenuListeners() {
     alert("제휴 매장 목록을 불러오는 중...");
   });
 
-  // 나의 패스권 보기
-  document.getElementById("btnMyPass")?.addEventListener("click", () => {
-    alert("구매한 패스권이 없습니다.");
-  });
-
   document.getElementById("btnMyPass")?.addEventListener("click", () => {
     loadMyTicketScreen();
   });
