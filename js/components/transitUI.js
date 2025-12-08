@@ -1,8 +1,3 @@
-import { getTransitRoute } from "./TmapAPI.js";
-import { parseTransitItinerary } from "./transitParser.js";
-
-const transitCache = {};
-
 // mode → 아이콘
 function getModeIcon(mode) {
   if (mode === "WALK")
@@ -13,40 +8,16 @@ function getModeIcon(mode) {
   return "➡️";
 }
 
-// Tmap API 캐싱
-// async function getTransitRouteCached(start, end) {
-//     const key = `${start.lat},${start.lng}_${end.lat},${end.lng}`;
+async function getSavedTransit(from, to) {
+  const url = `https://dtrip.onrender.com/api/transit-get?from=${encodeURIComponent(
+    from
+  )}&to=${encodeURIComponent(to)}`;
 
-//     // 이미 캐시에 저장된 경우 즉시 반환 (API 호출 없음)
-//     if (transitCache[key]) {
-//         console.log("📌 캐시에서 대중교통 경로 사용:", key);
-//         return transitCache[key];
-//     }
+  const res = await fetch(url);
+  const data = await res.json();
 
-//     const payload = {
-//         startX: start.lng,
-//         startY: start.lat,
-//         endX: end.lng,
-//         endY: end.lat,
-//         reqCoordType: "WGS84GEO",
-//         resCoordType: "WGS84GEO"
-//     };
-
-//     try {
-//         // API 최초 호출
-//         const data = await getTransitRoute(payload);
-
-//         // 정상 응답이면 캐싱
-//         transitCache[key] = data;
-//         return data;
-//     } catch (err) {
-//         console.error("❌ 대중교통 API 실패:", err);
-
-//         // API 실패도 반영 (429일 때도 캐시에 넣어버려)
-//         transitCache[key] = null;
-//         return null;
-//     }
-// }
+  return data; // { result: {...}, createdAt: ... }
+}
 
 // 도보 안내 생성
 function createWalkFallback(start, end) {
@@ -96,33 +67,35 @@ export async function renderTransitPanel(places) {
     const start = places[i];
     const end = places[i + 1];
 
+    const saved = await getSavedTransit(start.name, end.name);
+    let parsed;
+
     try {
-      await new Promise((r) => setTimeout(r, 300));
+      if (saved?.result) {
+        console.log("📦 DB에서 캐시된 경로 사용");
+        parsed = saved.result;
+      } else {
+        console.log("🌐 DB에 없어서 서버에 새로 요청");
 
-      // const raw = await getTransitRouteCached(
-      //     { lat: start.lat, lng: start.lng },
-      //     { lat: end.lat, lng: end.lng }
-      // );
-      // let parsed = parseTransitItinerary(raw);
+        const res = await fetch(
+          "https://dtrip.onrender.com/api/transit-cached-parsed",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              startX: start.lng,
+              startY: start.lat,
+              endX: end.lng,
+              endY: end.lat,
+              startName: start.name,
+              endName: end.name,
+            }),
+          }
+        );
 
-      const res = await fetch(
-        "https://dtrip.onrender.com/api/transit-cached-parsed",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            startX: start.lng,
-            startY: start.lat,
-            endX: end.lng,
-            endY: end.lat,
-            startName: start.name,
-            endName: end.name,
-          }),
-        }
-      );
-
-      const data = await res.json();
-      let parsed = data.result;
+        const data = await res.json();
+        parsed = data.result; // 서버에서 파싱된 값
+      }
 
       // 🔥 fallback 적용
       if (!parsed) {

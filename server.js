@@ -87,58 +87,27 @@ const PORT = process.env.PORT || 10000;
 //   }
 // });
 
+
+app.get("/api/transit-get", async (req, res) => {
+  const { from, to } = req.query;
+
+  if (!from || !to) {
+    return res.status(400).json({ error: "from, to 파라미터가 필요합니다." });
+  }
+
+  const key = `${from}_${to}`;
+  const ref = db.collection("ParsedTransitCache").doc(key);
+
+  const snap = await ref.get();
+  if (!snap.exists) {
+    return res.json(null); // 저장된 데이터 없음
+  }
+
+  return res.json(snap.data()); // 저장된 파싱 결과 그대로 반환
+});
+
+
 // Tmap 대중교통 & Polyline API
-// app.post("/api/transit", async (req, res) => {
-//   const { startX, startY, endX, endY } = req.body;
-
-//   console.log("🔥 Received Body:", req.body);
-//   console.log("TMAP_KEY:", TMAP_KEY);
-//   console.log("🔥 Received coords:", {
-//     startX, startY, endX, endY
-//   });
-
-//   // 값이 없으면 바로 에러 반환 (디버깅용)
-//   if (
-//     startX === undefined ||
-//     startY === undefined ||
-//     endX === undefined ||
-//     endY === undefined
-//   ) {
-//     return res.status(400).json({ error: "좌표가 누락되었습니다." });
-//   }
-
-//   // 2️⃣ Tmap에 보낼 payload를 딱 문서 형식대로 구성
-//   const payload = {
-//     startX: String(startX),
-//     startY: String(startY),
-//     endX: String(endX),
-//     endY: String(endY),
-//     count: 3,         // 결과 3개까지
-//     lang: 0,          // 한국어
-//     format: "json"
-//   };
-
-//   console.log("🚀 Sending to Tmap:", payload);
-
-//   try {
-//     const response = await fetch("https://apis.openapi.sk.com/transit/routes", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         "appKey": TMAP_KEY
-//       },
-//       body: JSON.stringify(payload)
-//     });
-
-//     const data = await response.json();
-
-//     res.status(response.status).json(data);
-//   } catch (err) {
-//     console.error("Server Error:", err);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// });
-
 app.post("/api/route", async (req, res) => {
   const { startX, startY, endX, endY, startname, endname } = req.body;
   console.log("🔥 /api/route Received Body:", req.body);
