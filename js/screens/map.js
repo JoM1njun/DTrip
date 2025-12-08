@@ -297,17 +297,18 @@ function createCompassMarker(lat, lng) {
     <div id="compassIcon" style="
       width: 30px;
       height: 30px;
-      transform-origin: center;
+      transform-origin: 50% 50%;
     ">
-      <img src="assets/icons/MyLocation.png" style="
+      <img id="compassImg" src="assets/icons/MyLocation.png" style="
         width: 100%;
         height: 100%;
         display: block;
+        transform-origin: 50% 50%;
       "/>
     </div>
   `;
 
-  compassMarkerElement = markerHTML.querySelector("#compassIcon");
+  compassMarkerElement = markerHTML.querySelector("#compassImg");
 
   compassMarker = new kakao.maps.CustomOverlay({
     map: mapInstance,
@@ -317,6 +318,26 @@ function createCompassMarker(lat, lng) {
     xAnchor: 0.5,
   });
 }
+
+window.addEventListener("deviceorientationabsolute", handleHeading, true);
+window.addEventListener("deviceorientation", handleHeading, true);
+
+function handleHeading(event) {
+  let heading = null;
+
+  if (event.webkitCompassHeading !== undefined) {
+    // iPhone
+    heading = event.webkitCompassHeading;
+  } else if (event.alpha !== null) {
+    // Android — alpha(0~360)는 북쪽 기준이 아니므로 변환 필요
+    heading = 360 - event.alpha;
+  }
+
+  if (heading === null || !compassMarkerElement) return;
+
+  compassMarkerElement.style.transform = `rotate(${heading}deg)`;
+}
+
 
 // 마커 방향 회전
 function startHeadingTracking() {
