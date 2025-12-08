@@ -2,7 +2,7 @@ import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
 import { db } from "./firebaseAdmin.js";
-import { doc, getDoc, setDoc } from "firebase-admin/firestore";
+//import { doc, getDoc, setDoc } from "firebase-admin/firestore";
 
 
 const TMAP_KEY = process.env.TMAP_KEY;
@@ -198,11 +198,11 @@ app.post("/api/transit-cached", async (req, res) => {
 
   // 🔑 캐시 Key
   const key = `${startName}_${endName}`;
-  const cacheRef = doc(db, "RouteCache", key);
+  const cacheRef = db.collection("RouteCache").doc(key);
 
   try {
     // 1️⃣ Firestore 캐시 체크
-    const snap = await getDoc(cacheRef);
+    const snap = await cacheRef.get();
 
     if (snap.exists()) {
       const { data, createdAt } = snap.data();
@@ -239,7 +239,7 @@ app.post("/api/transit-cached", async (req, res) => {
     const json = await tmapResponse.json();
 
     // 3️⃣ Firestore에 저장
-    await setDoc(cacheRef, {
+    await cacheRef.set({
       data: json,
       createdAt: new Date(),
     });
