@@ -17,7 +17,6 @@ let compassMarker = null;
 let compassMarkerElement = null;
 let selectedTag = null;
 let autoCenter = true;
-let myLocationMarker = null;
 
 // 지도 화면 생성
 export async function loadMapScreen() {
@@ -293,22 +292,30 @@ function registerTagFilterEvents() {
 
 // 마커 생성
 function createCompassMarker(lat, lng) {
-  compassMarker = new kakao.maps.Marker({
+  const markerHTML = document.createElement("div");
+  markerHTML.innerHTML = `
+    <div id="compassIcon" style="
+      width: 30px;
+      height: 30px;
+      transform-origin: center;
+    ">
+      <img src="assets/icons/MyLocation.png" style="
+        width: 100%;
+        height: 100%;
+        display: block;
+      "/>
+    </div>
+  `;
+
+  compassMarkerElement = markerHTML.querySelector("#compassIcon");
+
+  compassMarker = new kakao.maps.CustomOverlay({
     map: mapInstance,
     position: new kakao.maps.LatLng(lat, lng),
-    image: new kakao.maps.MarkerImage(
-      "assets/icons/MyLocation.png",
-      new kakao.maps.Size(30, 30),
-      { offset: new kakao.maps.Point(20, 20) }
-    ),
+    content: markerHTML,
+    yAnchor: 0.5,
+    xAnchor: 0.5,
   });
-
-  // DOM 렌더링 후 실제 이미지 태그를 가져온다
-  setTimeout(() => {
-    compassMarkerElement = document.querySelector(
-      `img[src="assets/icons/MyLocation.png"]`
-    );
-  }, 300);
 }
 
 // 마커 방향 회전
@@ -316,9 +323,9 @@ function startHeadingTracking() {
   window.addEventListener("deviceorientation", (event) => {
     const heading = event.webkitCompassHeading || event.alpha;
 
-    if (compassMarkerElement && heading != null) {
-      compassMarkerElement.style.transform = `rotate(${heading}deg)`;
-    }
+    if (!heading || !compassMarkerElement) return;
+
+    compassMarkerElement.style.transform = `rotate(${heading}deg)`;
   });
 }
 
@@ -330,8 +337,10 @@ function startMovementTracking() {
       const lng = pos.coords.longitude;
       const loc = new kakao.maps.LatLng(lat, lng);
 
-      if (compassMarker) {
-        myLocationMarker.setPosition(loc);
+      if (!compassMarker) {
+        createCompassMarker(lat, lng);
+      } else {
+        compassMarker.setPosition(loc);
       }
 
       if (autoCenter) {
@@ -352,8 +361,8 @@ function startMovementTracking() {
 function enableAutoCenter() {
   autoCenter = true;
 
-  if (myLocationMarker) {
-    const pos = myLocationMarker.getPosition();
+  if (compassMarker) {
+    const pos = compassMarker.getPosition();
     mapInstance.setCenter(pos);
   }
 }
