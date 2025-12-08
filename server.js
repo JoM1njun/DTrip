@@ -14,21 +14,6 @@ app.use(express.json());
 const SERVICE_KEY = encodeURIComponent("36781dec23b439f774a5a628c913a453ef964b60b0e1aacf8b8ff7fdec8cee3f");
 const PORT = process.env.PORT || 10000;
 
-const ref = doc(db, "RouteCache", key);
-const snap = await getDoc(ref);
-
-if (snap.exists()) {
-  const cached = snap.data();
-
-  // 1시간 캐싱 예시
-  const EXPIRE = 1000 * 60 * 60;
-
-  if (Date.now() - cached.createdAt.toMillis() < EXPIRE) {
-    console.log("📦 Firestore 캐시 사용");
-    return res.json(cached.data);
-  }
-}
-
 
 app.get("/api/routes", async (req, res) => {
   const { cityCode, routeId } = req.query;
@@ -207,7 +192,7 @@ const CACHE_EXPIRE = 1000 * 60 * 60; // 1시간
 app.post("/api/transit-cached", async (req, res) => {
   const { startX, startY, endX, endY, startName, endName } = req.body;
 
-  if (!startX || !startY || !endX || !endY) {
+  if (!startX || !startY || !endX || !endY || !startName || !endName) {
     return res.status(400).json({ error: "좌표가 누락되었습니다." });
   }
 
@@ -222,13 +207,10 @@ app.post("/api/transit-cached", async (req, res) => {
     if (snap.exists()) {
       const { data, createdAt } = snap.data();
 
-      const expired = Date.now() - createdAt.toMillis() > CACHE_EXPIRE;
-
-      if (!expired) {
-        console.log("📦 캐시 사용");
+      if (Date.now() - createdAt.toMillis() < CACHE_EXPIRE) {
+        console.log("📦 캐시 사용됨");
         return res.json(data);
       }
-
       console.log("⚠️ 캐시 만료 → 새로 API 호출");
     } else {
       console.log("❌ 캐시 없음 → 새 API 호출");
