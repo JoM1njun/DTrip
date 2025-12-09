@@ -19,6 +19,8 @@ let compassMarker = null;
 let compassMarkerElement = null;
 let selectedTag = null;
 let autoCenter = false;
+let currentInfoWindow = null;
+let isNavigatingToDetail = false;
 
 async function loadAllPlaces() {
   const snapshot = await getDocs(collection(db, "Places"));
@@ -27,6 +29,7 @@ async function loadAllPlaces() {
 
 // 지도 화면 생성
 export async function loadMapScreen() {
+  sessionStorage.removeItem("map_back_to_detail_id");
   window.scrollTo(0, 0);
 
   const content = document.getElementById("content");
@@ -146,7 +149,7 @@ export async function loadMapScreen() {
 
       // 장소 다시 불러오기
       const places = await loadPlacesByTag(selectedTag);
-      updateMarkers(places);
+      updateMarkers(places, true);
     }
   }, 100);
 
@@ -164,6 +167,15 @@ export async function loadMapScreen() {
   // Drag시 자동 중심 맞추기 해제
   kakao.maps.event.addListener(mapInstance, "dragstart", () => {
     autoCenter = false;
+  });
+
+  kakao.maps.event.addListener(mapInstance, "click", () => {
+    if (isNavigatingToDetail) return;
+
+    if (currentInfoWindow) {
+      currentInfoWindow.setMap(null);
+      currentInfoWindow = null;
+    }
   });
 
   const allPlaces = await loadAllPlaces();
@@ -247,7 +259,7 @@ export async function loadKakaoMap() {
   });
 }
 
-function updateMarkers(places) {
+function updateMarkers(places, skipBounds = false) {
   placeMarkers.forEach((o) => o.setMap(null));
   placeMarkers = [];
 
@@ -273,11 +285,6 @@ function updateMarkers(places) {
     const markerEl = wrapper.firstElementChild; // 실제 요소
     markerEl.style.cursor = "pointer"; // 클릭 가능하게
 
-    markerEl.addEventListener("click", () => {
-      setCurrentScreen("map");
-      loadPlaceDetailPage(p.name);
-    });
-
     const overlay = new kakao.maps.CustomOverlay({
       map: mapInstance,
       position: new kakao.maps.LatLng(p.lat, p.lng),
@@ -285,16 +292,90 @@ function updateMarkers(places) {
       yAnchor: 1,
     });
 
+    markerEl.addEventListener("click", () => {
+      const pos = overlay.getPosition();
+
+      // 지도 이동
+      mapInstance.setLevel(3, { anchor: pos });
+      mapInstance.setCenter(pos);
+
+      // 기존 info 닫기
+      if (currentInfoWindow) {
+        currentInfoWindow.setMap(null);
+        currentInfoWindow = null;
+      }
+
+      // ⭐ DOM 방식 InfoWindow 생성
+      const { box, btn } = createInfoWindow(p);
+
+      currentInfoWindow = new kakao.maps.CustomOverlay({
+        position: pos,
+        content: box,
+        yAnchor: 1.6,
+        clickable: true,
+        map: mapInstance,
+      });
+
+      box.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
+
+      // ⭐ 상세정보 버튼 클릭
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+
+        console.log("상세보기 클릭:", p.name); // 디버깅용 로그
+
+        // 👉 이제부터는 지도 클릭 무시
+        isNavigatingToDetail = true;
+
+        if (currentInfoWindow) {
+          currentInfoWindow.setMap(null);
+          currentInfoWindow = null;
+        }
+
+        sessionStorage.setItem("map_prev_screen", "map");
+        sessionStorage.setItem("map_back_to_detail_id", p.name);
+
+        try {
+          setCurrentScreen("map");
+          await loadPlaceDetailPage(p.name);
+        } finally {
+          // detail에서 다시 map으로 돌아올 때를 대비해서 false로 돌려놓기
+          isNavigatingToDetail = false;
+        }
+      });
+    });
+
     placeMarkers.push(overlay);
   });
 
-  window.placeMarkers = placeMarkers;
-
-  if (places.length > 0) {
+  // ⭐ bounds 처리
+  if (!skipBounds && places.length > 0) {
     const bounds = new kakao.maps.LatLngBounds();
     places.forEach((p) => bounds.extend(new kakao.maps.LatLng(p.lat, p.lng)));
-    mapInstance.setBounds(bounds); // ⭐ 항상 실행되도록
+    mapInstance.setBounds(bounds);
   }
+}
+
+// InfoWindow
+function createInfoWindow(p) {
+  const box = document.createElement("div");
+  box.className = "map-infowindow"; // CSS에서 스타일 지정
+  box.addEventListener("click", (e) => e.stopPropagation());
+
+  const title = document.createElement("div");
+  title.className = "title";
+  title.textContent = p.name;
+
+  const btn = document.createElement("button");
+  btn.className = "detail-btn";
+  btn.textContent = "상세정보";
+
+  box.appendChild(title);
+  box.appendChild(btn);
+
+  return { box, btn };
 }
 
 // Tag Location Load
