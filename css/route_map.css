@@ -77,6 +77,12 @@
 /* bottomSheet 내부 리스트 */
 #transitPanel {
     height: calc(100% - 26px); /* 손잡이 제외 */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#transitPanel::-webkit-scrollbar {
+    display: none;
 }
 
 /* 각 구간 카드 */

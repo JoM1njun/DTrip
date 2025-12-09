@@ -184,22 +184,19 @@ function enableBottomSheetDrag() {
   let startHeight = 0;
 
   const MIN_HEIGHT = 140; // 완전 닫힘 상태
-  let CURRENT_MAX_HEIGHT = MIN_HEIGHT;
-  let CURRENT_MID_HEIGHT = MIN_HEIGHT;
+  const MID_HEIGHT = window.innerHeight * 0.5;
 
-  // 터치 시작
+  // 초기 상태 스크롤 OFF
+  sheet.style.height = MIN_HEIGHT + "px";
+  panel.style.overflowY = "hidden";
+
   const onStart = (e) => {
     const t = e.touches[0];
 
-    // 🔥 여기서 "현재" panel.scrollHeight 기준으로 다시 계산
-    const VIEW_H = window.innerHeight;
-    const contentHeight = panel.scrollHeight + 40;
-
-    CURRENT_MAX_HEIGHT = Math.min(contentHeight, VIEW_H * 0.9); // 최대 90%
-    CURRENT_MID_HEIGHT = VIEW_H * 0.5; // 중간 단계
-
-    console.log("👉 drag start, panel.scrollHeight:", panel.scrollHeight);
-    console.log("👉 MAX_HEIGHT:", CURRENT_MAX_HEIGHT);
+    // 이미 중간까지 열려 있고, 패널이 스크롤 중이면 → 시트 드래그 금지
+    if (panel.scrollTop > 0 && sheet.offsetHeight >= MID_HEIGHT - 1) {
+      return;
+    }
 
     startY = t.clientY;
     startHeight = sheet.offsetHeight;
@@ -220,7 +217,7 @@ function enableBottomSheetDrag() {
     let newHeight = startHeight + diff;
 
     if (newHeight < MIN_HEIGHT) newHeight = MIN_HEIGHT;
-    if (newHeight > CURRENT_MAX_HEIGHT) newHeight = CURRENT_MAX_HEIGHT;
+    if (newHeight > MID_HEIGHT) newHeight = MID_HEIGHT;
 
     sheet.style.height = `${newHeight}px`;
   };
@@ -233,19 +230,28 @@ function enableBottomSheetDrag() {
     sheet.style.transition = "height 0.28s ease";
 
     const current = sheet.offsetHeight;
-
-    let finalHeight =
-      current < (MIN_HEIGHT + CURRENT_MID_HEIGHT) / 2
-        ? MIN_HEIGHT
-        : current < (CURRENT_MID_HEIGHT + CURRENT_MAX_HEIGHT) / 2
-        ? CURRENT_MID_HEIGHT
-        : CURRENT_MAX_HEIGHT;
+    const snapPoint = (MIN_HEIGHT + MID_HEIGHT) / 2;
+    const finalHeight = current < snapPoint ? MIN_HEIGHT : MID_HEIGHT;
 
     sheet.style.height = finalHeight + "px";
+
+    // 🔥 MID일 때만 내부 스크롤 허용
+    panel.style.overflowY = finalHeight === MID_HEIGHT ? "auto" : "hidden";
   };
 
   // 이벤트 등록
+  // sheet 전체를 드래그 영역으로 만들기
+  sheet.addEventListener("touchstart", onStart);
+
+  // handle도 동작하도록 유지(필요하면 유지)
   handle.addEventListener("touchstart", onStart);
+
+  panel.addEventListener("touchstart", (e) => {
+    // panel이 스크롤 가능한 상태이고, 지금 scrollTop이 0보다 크면
+    if (panel.scrollTop > 0 && sheet.offsetHeight >= MID_HEIGHT - 1) {
+      e.stopPropagation(); // 이벤트가 sheet까지 올라가는 것 방지
+    }
+  });
 
   handle.addEventListener("mousedown", (e) => {
     e.touches = [{ clientY: e.clientY }]; // touch 구조로 변환
