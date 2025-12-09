@@ -7,40 +7,45 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 
 
+async function getAllPlacesMap() {
+  const snap = await getDocs(collection(db, "Places"));
+
+  const placeMap = new Map();
+  snap.forEach(doc => {
+    placeMap.set(doc.id, doc.data());
+  });
+
+  return placeMap;
+}
+
 export async function getUserRecommendPlaces() {
-  const usersRef = collection(db, "User");
-  const userSnap = await getDocs(usersRef);
+  // 1) 유저 전체 불러오기 → 1회 요청
+  const usersSnap = await getDocs(collection(db, "User"));
+
+  // 2) Places 전체 미리 가져오기 → 1회 요청 (기존 10~30회 → 단 1회!)
+  const placeMap = await getAllPlacesMap();
 
   let userList = [];
 
-  for (const docSnap of userSnap.docs) {
+  usersSnap.forEach(docSnap => {
     const user = docSnap.data();
-
-    // 🔥 user.places === ["p1", "p2", "p3"] 같은 상태
     const placeImages = [];
 
-    for (const placeId of user.images) {
-      if (!placeId || placeId.trim() === "") continue;
-
-      const placeRef = doc(db, "Places", placeId);
-      const placeSnap = await getDoc(placeRef);
-
-      if (placeSnap.exists()) {
-        const placeData = placeSnap.data();
-
-        // place 이미지 추가
-        if (placeData.image_url) {
-          placeImages.push(placeData.image_url);
-        }
+    // images 배열 기반으로 place 데이터 매칭
+    for (const placeId of user.images || []) {
+      const place = placeMap.get(placeId);
+      if (place?.image_url) {
+        placeImages.push(place.image_url);
       }
     }
 
     userList.push({
       ...user,
-      placeImages // → 최종적으로 image URL 배열이 됨
+      placeImages,
     });
-  }
+  });
 
+  // 정렬
   userList.sort((a, b) => b.favorite - a.favorite);
 
   return userList;
