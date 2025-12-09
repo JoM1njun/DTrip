@@ -324,52 +324,99 @@ function createCompassMarker(lat, lng) {
 window.addEventListener("deviceorientationabsolute", handleHeading, true);
 window.addEventListener("deviceorientation", handleHeading, true);
 
+let headingOffset = 0; // ← 너의 기기에 맞게 조절
+
 function handleHeading(event) {
   let heading = null;
 
   if (event.webkitCompassHeading !== undefined) {
-    // iPhone
-    heading = event.webkitCompassHeading;
+    heading = event.webkitCompassHeading;  // iPhone
   } else if (event.alpha !== null) {
-    // Android — alpha(0~360)는 북쪽 기준이 아니므로 변환 필요
-    heading = 360 - event.alpha;
+    heading = 360 - event.alpha;  // Android fallback
   }
 
-  if (heading === null || !compassMarkerElement) return;
+  if (heading == null || !compassMarkerElement) return;
 
-  compassMarkerElement.style.transform = `rotate(${heading}deg)`;
+  // 디스플레이 방향 보정
+  switch (window.orientation) {
+    case 90:
+      heading -= 90;
+      break;
+    case -90:
+      heading += 90;
+      break;
+    case 180:
+      heading += 180;
+      break;
+  }
+
+  // 사용자 오프셋 보정
+  const corrected = (heading + headingOffset + 360) % 360;
+
+  compassMarkerElement.style.transform = `rotate(${corrected}deg)`;
+}
+
+// IOS
+function startIOSHeading() {
+  window.addEventListener("deviceorientation", (event) => {
+    if (event.webkitCompassHeading != null) {
+      applyHeading(event.webkitCompassHeading);
+    }
+  });
+}
+
+// Android
+async function startAndroidAbsoluteSensor() {
+  try {
+    const sensor = new AbsoluteOrientationSensor({ frequency: 30 });
+    sensor.addEventListener("reading", () => {
+      const q = sensor.quaternion;
+      const heading = quaternionToHeading(q);
+      applyHeading(heading);
+    });
+    sensor.start();
+    return true;
+  } catch (err) {
+    console.warn("AbsoluteOrientationSensor 사용불가:", err);
+    return false;
+  }
+}
+
+// Android
+function quaternionToHeading(q) {
+  const [x, y, z, w] = q;
+  const siny = 2 * (w * z + x * y);
+  const cosy = 1 - 2 * (y * y + z * z);
+  let heading = Math.atan2(siny, cosy) * (180 / Math.PI);
+  if (heading < 0) heading += 360;
+  return heading;
+}
+
+// Android
+function startAndroidFallback() {
+  window.addEventListener("deviceorientation", (event) => {
+    if (event.alpha != null) {
+      let heading = 360 - event.alpha; // 화면 기준 → 북 기준 변환
+      applyHeading(heading);
+    }
+  });
 }
 
 
 // 마커 방향 회전
 function startHeadingTracking() {
-  // ---- iOS 권한 요청 처리 ----
-  if (typeof DeviceOrientationEvent !== "undefined" &&
-      typeof DeviceOrientationEvent.requestPermission === "function") {
+  if (typeof DeviceOrientationEvent?.requestPermission === "function") {
+    startIOSHeading();  
+    return;
+  }
 
-    const permissionBtn = document.createElement("button");
-    permissionBtn.innerText = "📍 방향 센서 허용";
-    permissionBtn.style.position = "absolute";
-    permissionBtn.style.top = "80px";
-    permissionBtn.style.left = "10px";
-    permissionBtn.style.padding = "8px 14px";
-    permissionBtn.style.background = "#fff";
-    permissionBtn.style.border = "1px solid #333";
-    permissionBtn.style.borderRadius = "6px";
-    permissionBtn.style.zIndex = "9999";
-    permissionBtn.style.cursor = "pointer";
-    document.body.appendChild(permissionBtn);
-
-    permissionBtn.addEventListener("click", () => {
-      DeviceOrientationEvent.requestPermission()
-        .then((state) => {
-          if (state === "granted") {
-            alert("방향 센서 사용 허용됨!");
-            permissionBtn.remove();
-          }
-        })
-        .catch(console.error);
+  // Android?
+  if ("AbsoluteOrientationSensor" in window) {
+    startAndroidAbsoluteSensor().then((ok) => {
+      if (!ok) startAndroidFallback();
     });
+  } else {
+    startAndroidFallback();
   }
 
   // ---- 방향 값 처리 ----
