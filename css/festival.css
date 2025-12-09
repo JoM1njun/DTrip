@@ -89,7 +89,7 @@
 /* 축제 카드 */
 .festival-card {
     display: flex;
-    background: #AEBCFE;
+    background-color: rgba(174, 188, 254, 0.5);
     width: 170px;
     border-radius: 15px;
     overflow: hidden;

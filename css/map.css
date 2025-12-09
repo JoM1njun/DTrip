@@ -16,7 +16,7 @@
     top: 20px;
     width: 100%;
     z-index: 1000;
-    padding: 0;
+    margin: 0px;
     pointer-events: auto;
 }
 
@@ -73,6 +73,7 @@
 
 #MapBackBtn {
     pointer-events: auto !important;
+    margin-left: 15px;
 }
 
 .recenter-btn {
