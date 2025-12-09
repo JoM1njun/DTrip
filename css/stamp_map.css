@@ -1,0 +1,155 @@
+/* ================================
+   📊 진행률 표시 (하단)
+================================ */
+
+.stamp-progress-bar {
+    position: absolute;
+    bottom: 100px;
+    left: 15px;
+    right: 15px;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 15px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.progress-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.progress-count {
+    font-size: 14px;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.progress-track {
+    width: 100%;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* ================================
+   💬 스탬프 정보창 (InfoWindow)
+================================ */
+
+.stamp-info-window {
+    padding: 15px;
+    min-width: 220px;
+    max-width: 280px;
+}
+
+.stamp-info-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.stamp-info-window img {
+    width: 40px;
+    height: 40px;
+}
+
+.stamp-info-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+}
+
+.stamp-info-desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.stamp-info-address {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 15px;
+}
+
+/* 스탬프 획득 버튼 */
+.stamp-collect-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.stamp-collect-btn.available {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+}
+
+.stamp-collect-btn.collected {
+    background: #e8f5e9;
+    color: #4caf50;
+    cursor: default;
+}
+
+/* 취소 버튼 */
+.stamp-cancel-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border-radius: 10px;
+    border: none;
+    background: #ff6b6b;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* 획득 애니메이션 */
+@keyframes stampCollected {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.stamp-collected-animation {
+    animation: stampCollected 0.5s ease;
+}
+
+.stamp-info-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    color: #666;
+    cursor: pointer;
+}
+
+.stamp-info-close-btn:hover {
+    color: #000;
+}

@@ -5,18 +5,25 @@ import {
   getDocs,
 } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
 import { showHome, userLocation } from "../app.js";
-import { startBusTracking } from "../components/busTracker.js";
-import { loadRoutePathAndFocus } from "../components/busRoute.js";
+import { setActive } from "../components/tabbar.js";
+// import { startBusTracking } from "../components/busTracker.js";
+// import { loadRoutePathAndFocus } from "../components/busRoute.js";
 import { loadTags } from "../components/categoryTagLoader.js";
 import { loadPlaceDetailPage } from "./detail.js";
 import { setCurrentScreen } from "../app.js";
+import { setStampMapInstance, startStampMode } from "./stamp_map.js";
 
 let mapInstance = null;
 let placeMarkers = [];
 let compassMarker = null;
 let compassMarkerElement = null;
 let selectedTag = null;
-let autoCenter = true;
+let autoCenter = false;
+
+async function loadAllPlaces() {
+  const snapshot = await getDocs(collection(db, "Places"));
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+}
 
 // 지도 화면 생성
 export async function loadMapScreen() {
@@ -95,6 +102,17 @@ export async function loadMapScreen() {
   }
 
   await loadTags("maptagFilter");
+  // ⭐ MAP 전용 태그 추가
+  const mapTagFilter = document.getElementById("maptagFilter");
+  mapTagFilter.insertAdjacentHTML(
+    "afterbegin",
+    `
+    <span class="tag" data-tag="스탬프">
+      <img src="assets/icons/stamp.svg" /> 스탬프
+    </span>
+  `
+  );
+
   registerTagFilterEvents();
 
   await loadKakaoMap();
@@ -132,12 +150,33 @@ export async function loadMapScreen() {
     }
   }, 100);
 
-  document.getElementById("recenterBtn").addEventListener("click", enableAutoCenter);
+  document
+    .getElementById("recenterBtn")
+    .addEventListener("click", enableAutoCenter);
+
+  document.querySelectorAll("#maptagFilter .tag").forEach((t) => {
+    t.classList.remove("selected");
+  });
+
+  // 선택된 태그 상태 초기화
+  selectedTag = null;
 
   // Drag시 자동 중심 맞추기 해제
   kakao.maps.event.addListener(mapInstance, "dragstart", () => {
     autoCenter = false;
   });
+
+  const allPlaces = await loadAllPlaces();
+  updateMarkers(allPlaces);
+
+  // ⭐ 처음 진입 시 장소들로 중심 맞추기
+  setTimeout(() => {
+    const bounds = new kakao.maps.LatLngBounds();
+    allPlaces.forEach((p) =>
+      bounds.extend(new kakao.maps.LatLng(p.lat, p.lng))
+    );
+    mapInstance.setBounds(bounds);
+  }, 50);
 }
 
 // 카카오맵 초기화 및 위치 설정
@@ -154,7 +193,7 @@ async function initMapWithUserLocation() {
   const { lat, lng } = userLocation ?? defaultPos;
 
   const map = new kakao.maps.Map(container, {
-    center: new kakao.maps.LatLng(lat, lng),
+    center: new kakao.maps.LatLng(36.35, 127.38),
     level: 4,
   });
 
@@ -170,7 +209,7 @@ async function initMapWithUserLocation() {
         const currentPos = new kakao.maps.LatLng(lat, lng);
 
         // 4. 지도 중심을 현재 위치로 변경
-        map.setCenter(currentPos);
+        // map.setCenter(currentPos);
 
         createCompassMarker(lat, lng);
       },
@@ -249,10 +288,12 @@ function updateMarkers(places) {
     placeMarkers.push(overlay);
   });
 
+  window.placeMarkers = placeMarkers;
+
   if (places.length > 0) {
     const bounds = new kakao.maps.LatLngBounds();
     places.forEach((p) => bounds.extend(new kakao.maps.LatLng(p.lat, p.lng)));
-    mapInstance.setBounds(bounds);
+    mapInstance.setBounds(bounds); // ⭐ 항상 실행되도록
   }
 }
 
@@ -272,6 +313,79 @@ function registerTagFilterEvents() {
   document.querySelectorAll("#maptagFilter .tag").forEach((tag) => {
     tag.addEventListener("click", async () => {
       const tagName = tag.dataset.tag;
+
+      if (selectedTag === "스탬프" && tagName !== "스탬프") {
+        selectedTag = null;
+
+        const m = await import("./stamp_map.js");
+        m.clearStampMarkers?.();
+        m.clearStampUI?.();
+
+        console.log("🔚 스탬프 모드 해제됨");
+      }
+
+      // Stamp
+      if (tagName === "스탬프") {
+        // 이미 스탬프 선택된 상태에서 다시 클릭 → 해제
+        if (selectedTag === "스탬프") {
+          selectedTag = null;
+
+          // 선택 효과 제거
+          document
+            .querySelectorAll("#maptagFilter .tag")
+            .forEach((t) => t.classList.remove("selected"));
+
+          // 스탬프 마커 제거
+          const m = await import("./stamp_map.js");
+
+          await m.clearStampMarkers?.();
+          await m.clearStampUI?.();
+
+          // 기존 장소 마커 복원
+          const allPlaces = await loadAllPlaces();
+          updateMarkers(allPlaces);
+
+          return;
+        }
+
+        // 스탬프 처음 선택한 경우
+        selectedTag = "스탬프";
+
+        // 스타일 반영
+        document
+          .querySelectorAll("#maptagFilter .tag")
+          .forEach((t) => t.classList.remove("selected"));
+        tag.classList.add("selected");
+
+        // 스탬프 모드 실행
+        import("./stamp_map.js").then((m) => {
+          m.setStampMapInstance(mapInstance);
+          m.startStampMode();
+        });
+
+        return;
+      }
+
+      // ⭐ 같은 태그를 다시 클릭하면 선택 해제
+      if (selectedTag === tagName) {
+        selectedTag = null;
+
+        // 선택 효과 제거
+        document.querySelectorAll("#maptagFilter .tag").forEach((t) => {
+          t.classList.remove("selected");
+        });
+
+        // 전체 마커 다시 표시
+        const snapshot = await getDocs(collection(db, "Places"));
+        const allPlaces = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        updateMarkers(allPlaces);
+
+        return; // 🔥 여기서 함수 종료
+      }
+
       selectedTag = tagName;
 
       // 🔥 기존 선택 제거
@@ -291,13 +405,13 @@ function registerTagFilterEvents() {
 }
 
 // 마커 생성
-function createCompassMarker(lat, lng) {
+function createCompassMarker(lat, lng, visible = false) {
   const markerHTML = document.createElement("div");
   markerHTML.innerHTML = `
     <div id="compassIcon" style="
       width: 30px;
       height: 30px;
-      display: flex;
+      display: ${visible ? "flex" : "none"}; 
       align-items: center;
       justify-content: center;
     ">
@@ -330,9 +444,9 @@ function handleHeading(event) {
   let heading = null;
 
   if (event.webkitCompassHeading !== undefined) {
-    heading = event.webkitCompassHeading;  // iPhone
+    heading = event.webkitCompassHeading; // iPhone
   } else if (event.alpha !== null) {
-    heading = 360 - event.alpha;  // Android fallback
+    heading = 360 - event.alpha; // Android fallback
   }
 
   if (heading == null || !compassMarkerElement) return;
@@ -402,11 +516,10 @@ function startAndroidFallback() {
   });
 }
 
-
 // 마커 방향 회전
 function startHeadingTracking() {
   if (typeof DeviceOrientationEvent?.requestPermission === "function") {
-    startIOSHeading();  
+    startIOSHeading();
     return;
   }
 
@@ -468,7 +581,7 @@ function startMovementTracking() {
     {
       enableHighAccuracy: true,
       maximumAge: 500,
-      timeout: 10000
+      timeout: 10000,
     }
   );
 }
@@ -478,8 +591,11 @@ function enableAutoCenter() {
   autoCenter = true;
 
   if (compassMarker) {
-    const pos = compassMarker.getPosition();
-    mapInstance.setCenter(pos);
+    const el = compassMarker.getContent().querySelector("#compassIcon");
+    el.style.display = "flex";
+
+    mapInstance.setCenter(compassMarker.getPosition());
+    mapInstance.setLevel(3);
   }
 }
 
@@ -511,6 +627,9 @@ function initMapWithoutUserCentering() {
     level: 5,
   });
 
-  startMovementTracking();  // ✔ 추가
-  startHeadingTracking();   // ✔ 나침반도 추가
+  const pos = userLocation || { lat: 36.35, lng: 127.38 };
+
+  createCompassMarker(pos.lat, pos.lng, false);
+  startMovementTracking(); // ✔ 추가
+  startHeadingTracking(); // ✔ 나침반도 추가
 }
