@@ -174,129 +174,270 @@ async function initRouteMap(places) {
   renderTransitPanel(places);
 }
 
+// function enableBottomSheetDrag() {
+//   const sheet = document.getElementById("bottomSheet");
+//   const handle = document.getElementById("sheetHandle");
+//   const panel = document.getElementById("transitPanel");
+
+//   if (!sheet || !handle || !panel) {
+//     console.warn("❌ bottomSheet 또는 sheetHandle을 찾지 못했습니다.");
+//     return;
+//   }
+
+//   let startY = 0;
+//   let startHeight = 0;
+//   let isDragging = false;
+
+//   const MIN_HEIGHT = 140; // 완전 닫힘 상태
+//   const MID_HEIGHT = window.innerHeight * 0.5;
+
+//   // 초기 상태 스크롤 OFF
+//   sheet.style.height = MIN_HEIGHT + "px";
+//   panel.style.overflowY = "hidden";
+
+//   const startDrag = (clientY) => {
+//     isDragging = true;
+//     startY = clientY;
+//     startHeight = sheet.offsetHeight;
+
+//     sheet.style.transition = "none";
+
+//     window.addEventListener("touchmove", onMove, { passive: false });
+//     window.addEventListener("touchend", endDrag);
+//   };
+
+//   // 터치 중 (드래그)
+//   const onMove = (e) => {
+//     if (!isDragging) return;
+
+//     const clientY = e.touches[0].clientY;
+//     const diff = startY - clientY; // 위로 끌면 height 증가
+
+//     let newHeight = startHeight + diff;
+
+//     if (newHeight < MIN_HEIGHT) newHeight = MIN_HEIGHT;
+//     if (newHeight > MID_HEIGHT) newHeight = MID_HEIGHT;
+
+//     if (e.cancelable) e.preventDefault();
+
+//     sheet.style.height = `${newHeight}px`;
+//   };
+
+//   // 터치 종료 → 스냅 적용
+//   const onEnd = () => {
+//     isDragging = false;
+
+//     window.removeEventListener("touchmove", onMove);
+//     window.removeEventListener("touchend", onEnd);
+
+//     sheet.style.transition = "height 0.28s ease";
+
+//     const current = sheet.offsetHeight;
+//     const snapPoint = (MIN_HEIGHT + MID_HEIGHT) / 2;
+//     const finalHeight = current < snapPoint ? MIN_HEIGHT : MID_HEIGHT;
+
+//     sheet.style.height = finalHeight + "px";
+
+//     // 🔥 MID일 때만 내부 스크롤 허용
+//     panel.style.overflowY = finalHeight === MID_HEIGHT ? "auto" : "hidden";
+//   };
+
+//   // 이벤트 등록
+//   // sheet 전체를 드래그 영역으로 만들기
+//   sheet.addEventListener("touchstart", (e) => {
+//     // 패널 내부 터치일 때 → 스크롤 모드인 경우는 드래그 금지
+//     if (panel.contains(e.target) && sheet.offsetHeight >= MAX_HEIGHT - 1) {
+//       // 패널 스크롤모드 → 드래그 금지 & 스크롤 허용
+//       return;
+//     }
+
+//     // 패널에 있지만 스크롤이 맨 위이고, 사용자가 위로 끌려는 경우 → 드래그 전환
+//     if (
+//       panel.contains(e.target) &&
+//       panel.scrollTop === 0 &&
+//       e.touches[0].clientY < startY
+//     ) {
+//       startDrag(e.touches[0].clientY);
+//       return;
+//     }
+
+//     // sheet 아무대나 잡아도 드래그 가능
+//     startDrag(e.touches[0].clientY);
+//   });
+
+//   // 📌 handle은 무조건 드래그 가능
+//   handle.addEventListener("touchstart", (e) => {
+//     startDrag(e.touches[0].clientY);
+//     e.stopPropagation();
+//   });
+
+//   panel.addEventListener("touchstart", (e) => {
+//     allowDrag = false;
+//     // panel이 스크롤 가능한 상태이고, 지금 scrollTop이 0보다 크면
+//     if (panel.scrollTop > 0 && sheet.offsetHeight >= MID_HEIGHT - 1) {
+//       e.stopPropagation(); // 이벤트가 sheet까지 올라가는 것 방지
+//     }
+//   });
+
+//   panel.addEventListener("touchmove", (e) => {
+//     if (sheet.offsetHeight >= MID_HEIGHT - 1 && panel.scrollTop > 0) {
+//       // MID 상태에서는 패널이 스크롤 영역 → 드래그 막기
+//       e.stopPropagation();
+//     }
+//   });
+
+//   panel.addEventListener("touchend", () => {
+//     allowDrag = true; // ← 패널에서 손 떼면 다시 드래그 가능
+//   });
+
+//   handle.addEventListener("mousedown", (e) => {
+//     e.touches = [{ clientY: e.clientY }]; // touch 구조로 변환
+//     onStart(e);
+
+//     const onMouseMove = (ev) => {
+//       ev.preventDefault();
+//       ev.touches = [{ clientY: ev.clientY }];
+//       onMove(ev);
+//     };
+
+//     const onMouseUp = () => {
+//       onEnd();
+//       window.removeEventListener("mousemove", onMouseMove);
+//       window.removeEventListener("mouseup", onMouseUp);
+//     };
+
+//     window.addEventListener("mousemove", onMouseMove);
+//     window.addEventListener("mouseup", onMouseUp);
+//   });
+//   // handle.addEventListener("touchmove", onMove);
+//   // handle.addEventListener("touchend", onEnd);
+// }
+
 function enableBottomSheetDrag() {
   const sheet = document.getElementById("bottomSheet");
-  const handle = document.getElementById("sheetHandle");
   const panel = document.getElementById("transitPanel");
+  const handle = document.getElementById("sheetHandle");
 
-  if (!sheet || !handle || !panel) {
-    console.warn("❌ bottomSheet 또는 sheetHandle을 찾지 못했습니다.");
-    return;
-  }
+  if (!sheet || !panel) return;
 
   let startY = 0;
   let startHeight = 0;
+  let isDragging = false;
 
-  const MIN_HEIGHT = 140; // 완전 닫힘 상태
-  const MID_HEIGHT = window.innerHeight * 0.5;
+  const MIN_HEIGHT = 140;
+  const MAX_HEIGHT = window.innerHeight * 0.5;
 
-  // 초기 상태 스크롤 OFF
   sheet.style.height = MIN_HEIGHT + "px";
   panel.style.overflowY = "hidden";
 
-  const onStart = (e) => {
-    if (!allowDrag) return;
-
-    const t = e.touches[0];
-
-    // 이미 중간까지 열려 있고, 패널이 스크롤 중이면 → 시트 드래그 금지
-    if (panel.scrollTop > 0 && sheet.offsetHeight >= MID_HEIGHT - 1) {
-      return;
-    }
-
-    startY = t.clientY;
+  const startDrag = (clientY) => {
+    isDragging = true;
+    startY = clientY;
     startHeight = sheet.offsetHeight;
 
     sheet.style.transition = "none";
 
+    // 모바일
     window.addEventListener("touchmove", onMove, { passive: false });
-    window.addEventListener("touchend", onEnd);
+    window.addEventListener("touchend", endDrag);
+
+    // PC
+    window.addEventListener("mousemove", onMoveMouse);
+    window.addEventListener("mouseup", endDragMouse);
   };
 
-  // 터치 중 (드래그)
   const onMove = (e) => {
-    e.preventDefault();
+    if (!isDragging) return;
+    const clientY = e.touches[0].clientY;
+    updateDrag(clientY, e);
+  };
 
-    const t = e.touches[0];
-    const diff = startY - t.clientY; // 위로 끌면 height 증가
+  const onMoveMouse = (e) => {
+    if (!isDragging) return;
+    updateDrag(e.clientY, e);
+  };
+
+  const updateDrag = (clientY, e) => {
+    const diff = startY - clientY;
 
     let newHeight = startHeight + diff;
-
     if (newHeight < MIN_HEIGHT) newHeight = MIN_HEIGHT;
-    if (newHeight > MID_HEIGHT) newHeight = MID_HEIGHT;
+    if (newHeight > MAX_HEIGHT) newHeight = MAX_HEIGHT;
 
-    sheet.style.height = `${newHeight}px`;
+    if (e.cancelable) e.preventDefault();
+    sheet.style.height = newHeight + "px";
   };
 
-  // 터치 종료 → 스냅 적용
-  const onEnd = () => {
+  const endDrag = () => {
+    finishDrag();
     window.removeEventListener("touchmove", onMove);
-    window.removeEventListener("touchend", onEnd);
+    window.removeEventListener("touchend", endDrag);
+  };
 
-    sheet.style.transition = "height 0.28s ease";
+  const endDragMouse = () => {
+    finishDrag();
+    window.removeEventListener("mousemove", onMoveMouse);
+    window.removeEventListener("mouseup", endDragMouse);
+  };
+
+  const finishDrag = () => {
+    isDragging = false;
+    sheet.style.transition = "height 0.25s ease";
 
     const current = sheet.offsetHeight;
-    const snapPoint = (MIN_HEIGHT + MID_HEIGHT) / 2;
-    const finalHeight = current < snapPoint ? MIN_HEIGHT : MID_HEIGHT;
+    const snapPoint = (MIN_HEIGHT + MAX_HEIGHT) / 2;
 
+    const finalHeight = current < snapPoint ? MIN_HEIGHT : MAX_HEIGHT;
     sheet.style.height = finalHeight + "px";
 
-    // 🔥 MID일 때만 내부 스크롤 허용
-    panel.style.overflowY = finalHeight === MID_HEIGHT ? "auto" : "hidden";
+    panel.style.overflowY = finalHeight === MAX_HEIGHT ? "auto" : "hidden";
   };
 
-  // 이벤트 등록
-  // sheet 전체를 드래그 영역으로 만들기
+  // --------------------------
+  // sheet 전체 드래그 (모바일)
+  // --------------------------
   sheet.addEventListener("touchstart", (e) => {
-    // panel이 아니라 sheet에서 터치했을 때만 드래그 허용
-    if (e.target === panel) return;
-    allowDrag = true;
-  });
+    const target = e.target;
 
-  // handle도 동작하도록 유지(필요하면 유지)
-  handle.addEventListener("touchstart", onStart);
+    if (panel.contains(target) && sheet.offsetHeight >= MAX_HEIGHT - 1) return;
 
-  panel.addEventListener("touchstart", (e) => {
-    allowDrag = false;
-    // panel이 스크롤 가능한 상태이고, 지금 scrollTop이 0보다 크면
-    if (panel.scrollTop > 0 && sheet.offsetHeight >= MID_HEIGHT - 1) {
-      e.stopPropagation(); // 이벤트가 sheet까지 올라가는 것 방지
+    if (panel.contains(target) && panel.scrollTop === 0) {
+      startDrag(e.touches[0].clientY);
+      return;
     }
+
+    startDrag(e.touches[0].clientY);
   });
 
-  panel.addEventListener("touchmove", (e) => {
-    if (sheet.offsetHeight >= MID_HEIGHT - 1 && panel.scrollTop > 0) {
-      // MID 상태에서는 패널이 스크롤 영역 → 드래그 막기
-      e.stopPropagation();
+  // --------------------------
+  // sheet 전체 드래그 (PC)
+  // --------------------------
+  sheet.addEventListener("mousedown", (e) => {
+    const target = e.target;
+
+    if (panel.contains(target) && sheet.offsetHeight >= MAX_HEIGHT - 1) return;
+
+    if (panel.contains(target) && panel.scrollTop === 0) {
+      startDrag(e.clientY);
+      return;
     }
+
+    startDrag(e.clientY);
   });
 
-  panel.addEventListener("touchend", () => {
-    allowDrag = true; // ← 패널에서 손 떼면 다시 드래그 가능
+  // handle은 항상 drag 가능
+  handle.addEventListener("touchstart", (e) => {
+    startDrag(e.touches[0].clientY);
+    e.stopPropagation();
   });
 
   handle.addEventListener("mousedown", (e) => {
-    e.touches = [{ clientY: e.clientY }]; // touch 구조로 변환
-    onStart(e);
-
-    const onMouseMove = (ev) => {
-      ev.preventDefault();
-      ev.touches = [{ clientY: ev.clientY }];
-      onMove(ev);
-    };
-
-    const onMouseUp = () => {
-      onEnd();
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-    };
-
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
+    startDrag(e.clientY);
+    e.stopPropagation();
   });
-  // handle.addEventListener("touchmove", onMove);
-  // handle.addEventListener("touchend", onEnd);
 }
+
+
 
 // detail.js의 길 안내
 export async function loadRouteMapScreen() {
