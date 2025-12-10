@@ -30,6 +30,18 @@ async function wakeServerIfNeeded() {
   return true;
 }
 
+function hideSplash() {
+  const splash = document.getElementById("splash-screen");
+  if (!splash) return;
+
+  splash.style.transition = "opacity 0.4s ease";
+  splash.style.opacity = "0";
+
+  splash.addEventListener("transitionend", () => {
+    splash.remove();
+  });
+}
+
 window.addEventListener("load", async () => {
   console.log("🚀 Splash 시작");
 
@@ -43,11 +55,8 @@ window.addEventListener("load", async () => {
 
   // 3) 2초 뒤 홈화면 로드
   setTimeout(() => {
-    document.getElementById("splash-screen").style.opacity = "0";
-    setTimeout(() => {
-      document.getElementById("splash-screen").remove();
-      import("./screens/home.js").then(m => m.loadHomeScreen());
-    }, 400);
+    hideSplash();
+    import("./screens/home.js").then(m => m.loadHomeScreen());
   }, 2000);
 });
 
@@ -117,7 +126,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   await requestUserLocation();
   showHome();
   // 초기 화면: Home
-  loadHomeScreen();
+  // loadHomeScreen();
   setActive("home");
 });
 
