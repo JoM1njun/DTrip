@@ -255,6 +255,13 @@ function enableBottomSheetDrag() {
     }
   });
 
+  panel.addEventListener("touchmove", (e) => {
+    if (sheet.offsetHeight >= MID_HEIGHT - 1 && panel.scrollTop > 0) {
+        // MID 상태에서는 패널이 스크롤 영역 → 드래그 막기
+        e.stopPropagation();
+    }
+});
+
   handle.addEventListener("mousedown", (e) => {
     e.touches = [{ clientY: e.clientY }]; // touch 구조로 변환
     onStart(e);
