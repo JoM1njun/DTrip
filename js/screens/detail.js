@@ -6,7 +6,11 @@ import {
 import { loadHomeScreen } from "./home.js";
 import { loadSeeAllPage, currentSeeAllType } from "./see_all.js";
 import { currentScreen, showHome } from "../app.js";
-import { addFavorite, removeFavorite, isFavorite } from "../components/favoriteStore.js";
+import {
+  addFavorite,
+  removeFavorite,
+  isFavorite,
+} from "../components/favoriteStore.js";
 
 export async function loadPlaceDetailPage(id) {
   const content = document.getElementById("content");
@@ -27,6 +31,24 @@ export async function loadPlaceDetailPage(id) {
   }
 
   const data = snap.data();
+
+  const homepageLink =
+    data.homepage && data.homepage.trim() !== ""
+      ? `
+      <a href="${data.homepage}" target="_blank" class="homepage-icon">
+        <img src="assets/icons/home.svg" />
+      </a>
+    `
+      : "";
+
+  const instagramLink =
+    data.instagram && data.instagram.trim() !== ""
+      ? `
+      <a href="${data.instagram}" target="_blank" class="homepage-icon">
+        <img src="assets/icons/instagram.svg" />
+      </a>
+    `
+      : "";
 
   content.innerHTML = `
     <div class="detail-page">
@@ -53,34 +75,49 @@ export async function loadPlaceDetailPage(id) {
         </div>
 
         <div class="detail-rating">
-        <p class="d_rating"><img src="assets/icons/star.svg" /> ${data.rating ?? 0
-    }</p>
+        <p class="d_rating"><img src="assets/icons/star.svg" /> ${
+          data.rating ?? 0
+        }</p>
         <p class="d_reviews">(${data.review?.toLocaleString() ?? 0} Reviews)</p>
 
             <!-- 운영시간 -->
             <div class="detail-row">
-                <p class="detail_time"><img src="assets/icons/time.svg" />${data.time_start ?? "운영 시간 정보 없음"
-    } ~ ${data.time_end ?? "운영 시간 정보 없음"}</p>
+                <p class="detail_time"><img src="assets/icons/time.svg" />${
+                  data.time_start ?? "운영 시간 정보 없음"
+                } ~ ${data.time_end ?? "운영 시간 정보 없음"}</p>
             <!-- 전화번호 -->
-                <p class="detail_phone"><img src="assets/icons/phone.svg" /><a href="tel:${data.phone}"> ${data.phone ?? "전화번호 없음"}</a>
+                <p class="detail_phone"><img src="assets/icons/phone.svg" /><a href="tel:${
+                  data.phone
+                }"> ${data.phone ?? "전화번호 없음"}</a>
                 </p>
             </div>
         </div>
 
         <div class="homepage">
-            <a href="${"https://www.sungsimdang.co.kr/" ?? "#"
-    }" target="_blank" class="homepage-icon">
-                <img src="assets/icons/home.svg" />
-            </a>
-            <a href="${"https://www.instagram.com/sungsimdang_official/" ?? "#"
-    }" target="_blank" class="homepage-icon">
-                <img src="assets/icons/instagram.svg" />
-            </a>
+            <a href="${homepageLink ? data.homepage : "#"}"
+       target="_blank"
+       class="homepage-icon"
+       style="opacity: ${homepageLink ? "1" : "0"}; pointer-events: ${
+          homepageLink ? "auto" : "none"
+        };">
+        <img src="assets/icons/home.svg" />
+    </a>
+
+    <!-- 인스타그램 -->
+    <a href="${instagramLink ? data.instagram : "#"}"
+       target="_blank"
+       class="homepage-icon"
+       style="opacity: ${instagramLink ? "1" : "0"}; pointer-events: ${
+          instagramLink ? "auto" : "none"
+        };">
+        <img src="assets/icons/instagram.svg" />
+    </a>
         </div>
 
         <!-- 설명 -->
-        <p class="detail-description">${data.description ?? "설명 정보 없음"
-    }</p>
+        <p class="detail-description">${
+          data.description ?? "설명 정보 없음"
+        }</p>
 
         <div class="detail-facilities">
             <h1>Facilities</h1>
@@ -134,32 +171,34 @@ export async function loadPlaceDetailPage(id) {
   `;
 
   // 뒤로가기 기능
-  document.getElementById("detailBackBtn").addEventListener("click", async () => {
-    const backTo = sessionStorage.getItem("backTo");
+  document
+    .getElementById("detailBackBtn")
+    .addEventListener("click", async () => {
+      const backTo = sessionStorage.getItem("backTo");
 
-    if (backTo === "route_map") {
-      sessionStorage.removeItem("backTo");
+      if (backTo === "route_map") {
+        sessionStorage.removeItem("backTo");
 
-      // 👉 뒤로갈 때 tabbar는 route_map 화면에서 숨겨져 있기 때문에 복원 X
-      const { loadUserRouteMap } = await import("./route_map.js");
+        // 👉 뒤로갈 때 tabbar는 route_map 화면에서 숨겨져 있기 때문에 복원 X
+        const { loadUserRouteMap } = await import("./route_map.js");
 
-      loadUserRouteMap(window.currentRouteUser);
-      // ⭐ route_map에서 user 정보를 넘겨서 사용 중이므로 복귀 시 동일 user 필요
+        loadUserRouteMap(window.currentRouteUser);
+        // ⭐ route_map에서 user 정보를 넘겨서 사용 중이므로 복귀 시 동일 user 필요
 
-      return;
-    }
+        return;
+      }
 
-    if (currentScreen === "seeall") {
-      loadSeeAllPage(currentSeeAllType);
-    } else if (currentScreen === "map") {
-      import("./map.js").then(module => module.loadMapScreen());
-      document.getElementById("tabbar").style.display = "flex";
-    } else {
-      showHome();
-      loadHomeScreen();
-      document.getElementById("tabbar").style.display = "flex";
-    }
-  });
+      if (currentScreen === "seeall") {
+        loadSeeAllPage(currentSeeAllType);
+      } else if (currentScreen === "map") {
+        import("./map.js").then((module) => module.loadMapScreen());
+        document.getElementById("tabbar").style.display = "flex";
+      } else {
+        showHome();
+        loadHomeScreen();
+        document.getElementById("tabbar").style.display = "flex";
+      }
+    });
 
   // 지도 보기 버튼 클릭
   document.getElementById("openMapBtn").addEventListener("click", () => {
@@ -167,7 +206,7 @@ export async function loadPlaceDetailPage(id) {
       id: id,
       name: data.name,
       lat: data.lat,
-      lng: data.lng
+      lng: data.lng,
     };
 
     // 지도에서 이 장소를 바로 표시하도록 데이터 전달
@@ -175,7 +214,7 @@ export async function loadPlaceDetailPage(id) {
     sessionStorage.setItem("map_back_to_detail_id", id.toString());
     sessionStorage.setItem("map_prev_screen", "detail");
 
-    import("./map.js").then(module => {
+    import("./map.js").then((module) => {
       module.loadMapScreen();
     });
 
