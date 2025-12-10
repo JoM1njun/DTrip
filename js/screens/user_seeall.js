@@ -37,7 +37,9 @@ async function loadUserList() {
     <div class="user-seeall-card">
     <div class="user-header">
         <div class="profile">
-          <img class="user-profile" src="${user.profile}" />
+          <div class="user-profile">
+            <img src="${user.profile}" />
+          </div>
           <h3 class="user-name">${user.name}</h3>
         </div>
         <button class="route-btn" data-index="${index}">길 안내</button>
