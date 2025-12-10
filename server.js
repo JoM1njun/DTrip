@@ -5,7 +5,6 @@ import { db } from "./firebaseAdmin.js";
 import { parseTransitItinerary } from "./transitParserServer.js";
 //import { doc, getDoc, setDoc } from "firebase-admin/firestore";
 
-
 const TMAP_KEY = process.env.TMAP_KEY;
 const app = express();
 app.use(cors());
@@ -17,19 +16,23 @@ const PORT = process.env.PORT || 10000;
 let lastActive = Date.now();
 
 // 🔥 모든 요청에 대해 Sleep → Wake 여부 체크
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   const now = Date.now();
   const diff = now - lastActive;
 
   if (diff > 15 * 60 * 1000) {
     console.log("💤 서버가 다시 깨어났음 → 캐싱 warm-up 처리");
-    // DB 캐싱, 초기화, 연결 재확인 등
+    try {
+      await db.collection("Places").limit(1).get();
+      console.log("🔥 Firestore Warm-up 완료");
+    } catch (e) {
+      console.log("Warm-up Firestore 실패:", e);
+    }
   }
 
   lastActive = now;
   next();
 });
-
 
 // app.get("/api/routes", async (req, res) => {
 //   const { cityCode, routeId } = req.query;
@@ -102,7 +105,6 @@ app.use((req, res, next) => {
 //   }
 // });
 
-
 app.get("/api/transit-get", async (req, res) => {
   const { from, to } = req.query;
 
@@ -120,7 +122,6 @@ app.get("/api/transit-get", async (req, res) => {
 
   return res.json(snap.data()); // 저장된 파싱 결과 그대로 반환
 });
-
 
 // Tmap 대중교통 & Polyline API
 app.post("/api/route", async (req, res) => {
@@ -144,7 +145,7 @@ app.post("/api/route", async (req, res) => {
     startName: startname ?? "출발지",
     endName: endname ?? "도착지",
     reqCoordType: "WGS84GEO",
-    resCoordType: "WGS84GEO"
+    resCoordType: "WGS84GEO",
   };
 
   console.log("🚀 Sending to Tmap routes/pedestrian:", payload);
@@ -156,7 +157,7 @@ app.post("/api/route", async (req, res) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json; charset=UTF-8",
-          "appKey": TMAP_KEY,            // 🔥 여기 꼭 확인
+          appKey: TMAP_KEY, // 🔥 여기 꼭 확인
         },
         body: JSON.stringify(payload),
       }
@@ -186,19 +187,25 @@ app.post("/api/transit-cached-parsed", async (req, res) => {
   }
 
   // 🔥 2) 원본 Tmap 경로 호출
-  const tmapResponse = await fetch("https://apis.openapi.sk.com/transit/routes", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "appKey": TMAP_KEY
-    },
-    body: JSON.stringify({
-      startX, startY, endX, endY,
-      count: 3,
-      lang: 0,
-      format: "json"
-    })
-  });
+  const tmapResponse = await fetch(
+    "https://apis.openapi.sk.com/transit/routes",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        appKey: TMAP_KEY,
+      },
+      body: JSON.stringify({
+        startX,
+        startY,
+        endX,
+        endY,
+        count: 3,
+        lang: 0,
+        format: "json",
+      }),
+    }
+  );
 
   const rawJson = await tmapResponse.json();
 
@@ -210,7 +217,7 @@ app.post("/api/transit-cached-parsed", async (req, res) => {
     from: startName,
     to: endName,
     result: parsed,
-    createdAt: new Date()
+    createdAt: new Date(),
   });
 
   return res.json({ from: startName, to: endName, result: parsed });
