@@ -57,6 +57,7 @@ window.addEventListener("load", async () => {
   setTimeout(() => {
     hideSplash();
     import("./screens/home.js").then(m => m.loadHomeScreen());
+    setActive("home");
   }, 2000);
 });
 
@@ -127,7 +128,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   showHome();
   // 초기 화면: Home
   // loadHomeScreen();
-  setActive("home");
+  //setActive("home");
 });
 
 // 사용자의 처음 위치 = null
