@@ -12,6 +12,8 @@ import { drawPolyline, getColorByMode } from "../components/Polyline.js";
 import { renderTransitPanel } from "../components/transitUI.js";
 import { userLocation } from "../app.js";
 
+let allowDrag = true;
+
 export async function loadUserRouteMap(user) {
   window.currentRouteUser = user;
 
@@ -193,6 +195,8 @@ function enableBottomSheetDrag() {
   panel.style.overflowY = "hidden";
 
   const onStart = (e) => {
+    if (!allowDrag) return;
+
     const t = e.touches[0];
 
     // 이미 중간까지 열려 있고, 패널이 스크롤 중이면 → 시트 드래그 금지
@@ -243,12 +247,17 @@ function enableBottomSheetDrag() {
 
   // 이벤트 등록
   // sheet 전체를 드래그 영역으로 만들기
-  sheet.addEventListener("touchstart", onStart);
+  sheet.addEventListener("touchstart", (e) => {
+    // panel이 아니라 sheet에서 터치했을 때만 드래그 허용
+    if (e.target === panel) return;
+    allowDrag = true;
+  });
 
   // handle도 동작하도록 유지(필요하면 유지)
   handle.addEventListener("touchstart", onStart);
 
   panel.addEventListener("touchstart", (e) => {
+    allowDrag = false;
     // panel이 스크롤 가능한 상태이고, 지금 scrollTop이 0보다 크면
     if (panel.scrollTop > 0 && sheet.offsetHeight >= MID_HEIGHT - 1) {
       e.stopPropagation(); // 이벤트가 sheet까지 올라가는 것 방지
@@ -257,10 +266,14 @@ function enableBottomSheetDrag() {
 
   panel.addEventListener("touchmove", (e) => {
     if (sheet.offsetHeight >= MID_HEIGHT - 1 && panel.scrollTop > 0) {
-        // MID 상태에서는 패널이 스크롤 영역 → 드래그 막기
-        e.stopPropagation();
+      // MID 상태에서는 패널이 스크롤 영역 → 드래그 막기
+      e.stopPropagation();
     }
-});
+  });
+
+  panel.addEventListener("touchend", () => {
+    allowDrag = true; // ← 패널에서 손 떼면 다시 드래그 가능
+  });
 
   handle.addEventListener("mousedown", (e) => {
     e.touches = [{ clientY: e.clientY }]; // touch 구조로 변환
