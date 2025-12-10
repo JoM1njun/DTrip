@@ -150,6 +150,8 @@ async function initRouteMap(places) {
 
     await new Promise((res) => setTimeout(res, 300));
 
+    await window.wakePromise;
+
     const data = await getTmapRoute(
       { lat: start.lat, lng: start.lng, name: start.name },
       { lat: end.lat, lng: end.lng, name: end.name }
@@ -304,6 +306,8 @@ export async function loadRouteMapScreen() {
     center: new kakao.maps.LatLng(userLocation.lat, userLocation.lng),
     level: 4,
   });
+
+  await window.wakePromise;
 
   // ⭐ Render 서버로 경로 요청
   const res = await fetch("https://dtrip.onrender.com/api/route", {

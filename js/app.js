@@ -42,20 +42,22 @@ function hideSplash() {
   });
 }
 
-window.addEventListener("load", async () => {
+window.addEventListener("load", () => {
   console.log("🚀 Splash 시작");
 
-  // 1) 서버 깨우기
-  await wakeServerIfNeeded();
+  // 1) 서버 깨우기 → 기다리지 않고 병렬로 실행
+  window.wakePromise = wakeServerIfNeeded();
 
-  // 2) Firestore 첫 요청 캐싱(작은 요청)
+  // 2) Firestore warm-up도 병렬로 실행
   import("./components/popularPlace.js").then(m => m.getPopularPlaces());
   import("./components/recommendPlace.js").then(m => m.getRecommendPlaces());
   import("./components/userrecommendPlace.js").then(m => m.getUserRecommendPlaces());
 
-  // 3) 2초 뒤 홈화면 로드
+  // 3) Splash는 무조건 2초만 유지
   setTimeout(() => {
     hideSplash();
+
+    // 4) Home 화면 즉시 로드 (서버 상태 상관 없음)
     import("./screens/home.js").then(m => m.loadHomeScreen());
     setActive("home");
   }, 2000);
