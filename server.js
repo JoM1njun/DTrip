@@ -14,6 +14,21 @@ app.use(express.json());
 // const SERVICE_KEY = "9152a33db8805474901b834fd11ad3fe3a2e69a432d7468eee1fde7afe57de2d";
 //const SERVICE_KEY = encodeURIComponent("36781dec23b439f774a5a628c913a453ef964b60b0e1aacf8b8ff7fdec8cee3f");
 const PORT = process.env.PORT || 10000;
+let lastActive = Date.now();
+
+// 🔥 모든 요청에 대해 Sleep → Wake 여부 체크
+app.use((req, res, next) => {
+  const now = Date.now();
+  const diff = now - lastActive;
+
+  if (diff > 15 * 60 * 1000) {
+    console.log("💤 서버가 다시 깨어났음 → 캐싱 warm-up 처리");
+    // DB 캐싱, 초기화, 연결 재확인 등
+  }
+
+  lastActive = now;
+  next();
+});
 
 
 // app.get("/api/routes", async (req, res) => {
@@ -199,6 +214,11 @@ app.post("/api/transit-cached-parsed", async (req, res) => {
   });
 
   return res.json({ from: startName, to: endName, result: parsed });
+});
+
+app.get("/ping", (req, res) => {
+  lastActive = Date.now();
+  res.send("pong");
 });
 
 app.listen(PORT, () => {

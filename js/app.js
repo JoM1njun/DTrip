@@ -6,6 +6,51 @@ import { setActive } from "./components/tabbar.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
 import { loadTags, loadCategories } from "./components/categoryTagLoader.js";
 
+
+async function wakeServerIfNeeded() {
+  const lastWake = localStorage.getItem("serverLastWake");
+  const now = Date.now();
+
+  // 15분 = 900,000ms
+  const SLEEP_THRESHOLD = 15 * 60 * 1000;
+
+  if (lastWake && now - lastWake < SLEEP_THRESHOLD) {
+    console.log("⚡ 서버 깨어있다고 판단 → ping 생략");
+    return false;
+  }
+
+  console.log("💤 서버가 잠들었을 가능성 높음 → ping 요청 보냄");
+  try {
+    await fetch("https://dtrip.onrender.com/ping");
+    localStorage.setItem("serverLastWake", Date.now());
+  } catch (e) {
+    console.warn("ping 실패:", e);
+  }
+
+  return true;
+}
+
+window.addEventListener("load", async () => {
+  console.log("🚀 Splash 시작");
+
+  // 1) 서버 깨우기
+  await wakeServerIfNeeded();
+
+  // 2) Firestore 첫 요청 캐싱(작은 요청)
+  import("./components/popularPlace.js").then(m => m.getPopularPlaces());
+  import("./components/recommendPlace.js").then(m => m.getRecommendPlaces());
+  import("./components/userrecommendPlace.js").then(m => m.getUserRecommendPlaces());
+
+  // 3) 2초 뒤 홈화면 로드
+  setTimeout(() => {
+    document.getElementById("splash-screen").style.opacity = "0";
+    setTimeout(() => {
+      document.getElementById("splash-screen").remove();
+      import("./screens/home.js").then(m => m.loadHomeScreen());
+    }, 400);
+  }, 2000);
+});
+
 export let currentUser = null;
 export let currentScreen = "home";
 
